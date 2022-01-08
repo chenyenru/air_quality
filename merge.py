@@ -4,8 +4,8 @@ import pathlib
 
 import pandas as pd
 
-root = "/Users/chen_yenru/Downloads/air_qu"
-path = os.path.join(root, "空氣品質")
+root = "/Users/chen_yenru/Documents/GitHub/air_qu/"
+path = os.path.join(root, "aqx")
 
 # data_list = []
 # for path, subdirs, files in os.walk(root):
@@ -22,8 +22,22 @@ path = os.path.join(root, "空氣品質")
 
 master_df = pd.DataFrame()
 
-for file in os.listdir(os.chdir("data")):
+for file in os.listdir(os.chdir("aqx")):
     if file.endswith("csv"):
         master_df = master_df.append(pd.read_csv(file))
 
-master_df.to_csv("combined.csv", index=False)
+master_df.to_csv("combined2.csv", index=False)
+
+"""" actual merging, type this in terminal
+for FILE in *.csv
+do
+        exec 5<"$FILE" # Open file
+        read LINE <&5 # Read first line
+        [ -z "$FIRST" ] && echo "$LINE" # Print it only from first file
+        FIRST="no"
+
+        cat <&5 # Print the rest directly to standard output
+        exec 5<&- # Close file
+        # Redirect stdout for this section into file.out
+done > file.csv
+"""
