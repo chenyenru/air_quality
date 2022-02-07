@@ -1,22 +1,28 @@
-
-documents/github/air_qu
+.
 ├── DATA
-|   ├── aqi_data_raws
-│   └── big files
-│       ├── combined.csv
-|       ├── file.csv
-|       └── file.csv.zip
-├── cars_and_trash.csv
-├── final_merge.csv
-├── first.ipynb
-├── garbage_truck.csv
-├── merge.py
-├── second_combine.ipynb
-├── shitun.csv
-├── taichung.csv
-├── tch_cars.csv
-├── third.ipynb
-└── trash_burned.csv
+│   ├── panel_analysis.ipynb
+│   ├── shitun.csv
+│   ├── stripping_data
+│   │   ├── aqi_data_raws
+            |-- data's too big I don't want to talk about it
+│   │   └── big files
+│   │       ├── combined.csv
+│   │       ├── file.csv
+│   │       └── file.csv.zip
+│   └── taichung_data
+│       ├── child_data
+│       │   ├── cars_and_trash.csv
+│       │   ├── garbage_truck.csv
+│       │   ├── taichung.csv
+│       │   ├── tch_cars.csv
+│       │   └── trash_burned.csv
+│       └── final_merge.csv
+├── README.md
+└── data_manipulation
+    ├── first.ipynb
+    ├── merge.py
+    ├── second_combine.ipynb
+    └── third.ipynb
 
 # Python Notebook
 - first.ipynb:

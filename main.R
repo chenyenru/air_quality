@@ -1,0 +1,1 @@
+data <- read.csv("~/Documents/GitHub/Data_Analysis/air_qu/DATA/taichung_data")
