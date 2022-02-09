@@ -1,19 +1,20 @@
 library(dplyr)
 library(openxlsx)
+library(readr)
 
 
-deaths_cancer <- read.csv("~/Documents/GitHub/Data_Analysis/air_qu/DATA/taichung_data/child_data/deaths_cancer_organized.csv")
-View(deaths_cancer)
+deaths_cancer <- read_csv("~/Documents/GitHub/Data_Analysis/air_qu/DATA/taichung_data/child_data/deaths_cancer_organized.csv")
+# View(deaths_cancer)
 deaths_cancer$year<- with(deaths_cancer, Year+1911)
 deaths_cancer <- select(deaths_cancer, -1)
 deaths_cancer<- deaths_cancer[-c(1,2),]
-View(deaths_cancer)
+# View(deaths_cancer)
 
-air_quality <- read.csv("~/Documents/GitHub/Data_Analysis/air_qu/DATA/taichung_data/child_data/air_quality.csv")
+air_quality <- read_csv("~/Documents/GitHub/Data_Analysis/air_qu/DATA/taichung_data/child_data/air_quality.csv")
 air_quality <- air_quality[-c(9,10),]
 # View(air_quality)
 
-population_density <- read.csv("~/Documents/GitHub/Data_Analysis/air_qu/DATA/taichung_data/child_data/population_density.csv")
+population_density <- read_csv("~/Documents/GitHub/Data_Analysis/air_qu/DATA/taichung_data/child_data/population_density.csv")
 # View(population_density)
 population_density<- population_density[-c(1,2),]
 # View(population_density)
@@ -30,6 +31,17 @@ merge_three <- merge(merge_one, merge_two, by="year")
 
 
 write.csv(merge_three, "DATA/taichung_data/merged.csv")
+
+# Importing the large dataset of all voila
+
+file <- read_csv("DATA/stripping_data/big files/file.csv")
+View(file)
+
+summary(file)
+
+
+
+
 
 # Starting the analysis HERE
 fit1 <- lm(`死亡率.主要癌症_氣管.支氣管和肺癌_死亡率.人.十萬人.`~ 標準化死亡率.主要死因_癌症.人.十萬人.+空氣中總懸浮微粒濃度+population_density+AQI.PSI..100之日數比率, data=merge_three)
