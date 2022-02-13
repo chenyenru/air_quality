@@ -1,42 +1,99 @@
 library(dplyr)
 library(openxlsx)
 library(readr)
+library(tidyr)
 
 doctors <- read_csv("~/Documents/GitHub/Data_Analysis/air_qu/sec_apprch/DATA/doctors.csv")
 ozone <- read_csv("~/Documents/GitHub/Data_Analysis/air_qu/sec_apprch/DATA/ozone.csv")
 revenue <- read_csv("~/Documents/GitHub/Data_Analysis/air_qu/sec_apprch/DATA/revenue.csv")
 
+colnames(doctors)[1] <- "year"
+doctors <- doctors %>%
+  gather("county", "doctor", -1)
+# doctors <- doctors[, c("year", "臺中市")]
+# colnames(doctors)[2] <- "doctor"
+
+colnames(ozone)[1] <- "year"
+ozone <- ozone %>%
+  gather("county", "ozone", -1)
+# ozone <- ozone[, c("year", "臺中市")]
+# colnames(ozone)[2] <- "ozone"
+
+colnames(revenue)[1] <- "year"
+revenue <- revenue %>%
+  gather("county", "revenue", -1)
+# revenue <- revenue[, c("year", "臺中市")]
+# colnames(revenue)[2] <- "revenue"
+
+
 doctors
 ozone
 revenue
 
-merge_one <- merge(population_density, air_quality, by="year")
-# View(merge_one)
+merge_one <- merge(doctors, ozone, by=c(1, 2))
+View(merge_one)
 
-merge_two<- merge(deaths_cancer, education, by="year")
-# View(merge_two)
-merge_three <- merge(merge_one, merge_two, by="year")
-# View(merge_three)
+merge_two<- merge(merge_one, revenue, by=c(1, 2))
+colnames(merge_two)[1] <- "year"
+View(merge_two)
 
 
-write.csv(merge_three, "DATA/taichung_data/merged.csv")
+Sys.setlocale("LC_ALL","Chinese")
+write.csv(merge_two, "DATA/merged.csv")
 
 # Importing the large dataset of all voila
 
-file <- read_csv("DATA/stripping_data/big files/file.csv")
+file <- read.csv("DATA/merged.csv")
+file <- file[,-1]
 View(file)
 
 summary(file)
 
 
-
-
-
 # Starting the analysis HERE
-fit1 <- lm(`死亡率.主要癌症_氣管.支氣管和肺癌_死亡率.人.十萬人.`~ 標準化死亡率.主要死因_癌症.人.十萬人.+空氣中總懸浮微粒濃度+population_density+AQI.PSI..100之日數比率, data=merge_three)
-fit2 <- lm(`死亡人數.主要死因_肺炎.人..`~ 標準化死亡率.主要死因_癌症.人.十萬人.+空氣中總懸浮微粒濃度+population_density+AQI.PSI..100之日數比率, data=merge_three)
-fit3 <- lm(`教育程度_15歲以上人口教育程度_大學...`~ 標準化死亡率.主要死因_癌症.人.十萬人.+空氣中總懸浮微粒濃度+population_density+AQI.PSI..100之日數比率, data=merge_three)
+library(tidyverse) # Modern data science library 
+library(plm)       # Panel data analysis library
+library(car)       # Companion to applied regression 
+library(gplots)    # Various programing tools for plotting data
+library(tseries)   # For timeseries analysis
+library(lmtest)    # For hetoroskedasticity analysis
+
+library(showtext)
+showtext_auto(enable = TRUE)
+font_families()
+coplot(ozone ~ year|county, type="b", data=file, family="source-han-serif-tw") 
+scatterplot(ozone~year|county, data=file, family="source-han-serif-tw")
+
+  ## Heterogeniety across countries
+plotmeans(ozone ~ county, data = file, family="arial")
+
+  ## Heterogeneity across years
+plotmeans(ozone ~ year, data = file, family="serif")
+
+# Basic OLS Model
+ols <-lm(ozone ~ doctor, data = file)
+summary(ols)            
+yhat <- ols$fitted
+ggplot(file, aes(x = doctor, y = ozone))+
+  geom_point() +
+  geom_smooth(method=lm)
+
+# Fixed Effects Model
+fixed.dum <-lm(ozone ~ doctor + factor(county) - 1, data = file)
+summary(fixed.dum)
 
 
-summary(fit)
+yhat <- fixed.dum$fitted
+scatterplot(yhat ~ file$doctor | file$county,  xlab ="doctor", ylab ="yhat of ozone", boxplots = FALSE,smooth = FALSE)
+abline(lm(dataPanel101$y~dataPanel101$x1),lwd=3, col="red")            
 
+
+
+
+## Using PLM
+# import package
+# import data 
+pdf = pdata.frame(file, index = c("county", "year"))
+# specify and run the model
+model = plm(ozone~doctor, data = pdf, model = "random")
+summary(model)
