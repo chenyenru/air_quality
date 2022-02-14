@@ -17,16 +17,16 @@
 定義：平均每人每年可支配所得。 	
 公式：平均每戶可支配所得／平均每戶人數 	
 
-標準化死亡率-主要癌症_肺癌標準化死亡率(人/十萬人)
 
 
 # lung_cancer_all.csv
-Age-standardized incidence rate per 100,000 standard population
 
-"year", "sex", "county", "cancer", "deaths", "cancer_counts", "mean_age", "median_age", "raw_death_rates"
+標準化死亡率-主要癌症_肺癌標準化死亡率(人/十萬人)
+年齡標準化發生率who 2000世界標準人口每10萬人口
+Age-standardized incidence rate / per 100,000 standard population
 
-[1] "癌症診斷年"                                          "性別"                                               
-[3] "縣市別"                                              "癌症別"                                             
+"癌症診斷年"                                          "性別"                                               [3] "縣市別"                                              "癌症別"                                             
 [5] "年齡標準化發生率  WHO 2000世界標準人口 (每10萬人口)" "癌症發生數"                                         
 [7] "平均年齡"                                            "年齡中位數"                                         
-[9] "粗率 (每10萬人口)"                                  
+[9] "粗率 (每10萬人口)"   
+
