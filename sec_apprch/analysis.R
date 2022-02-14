@@ -57,8 +57,8 @@ random <- plm(raw_death_rates ~ ozone, data=pdf, model="random")
 summary(random)
 
 # Fixed vs. Random
-# H0 = Random Effects Model is efficient
-# H1 = Fixed Effects Model is efficient
+# H0) = Random Effects Model is efficient
+# H1) = Fixed Effects Model is efficient
 # if a > 0.05:
 #   We should use the random effects model
 phtest(fixed, random)
@@ -75,4 +75,46 @@ plmtest(fixed, c("time"), type=("bp"))
 ### In this example, no need to use time-fixed effects.
 
 ## Random effects vs Pooled OLS
+pool <- plm(raw_death_rates ~ ozone, data=pdf, model="pooling")
+summary(pool)
 
+## Breusch-Pagan Lagrange Multiplier for random effects. Null is no panel effect (i.e. OLS better).
+plmtest(pool, type=c("bp"))
+
+## Cross-sectional dependence testing
+fixed <- plm(raw_death_rates ~ ozone, data=pdf, model="within")
+pcdtest(fixed, c("lm"))
+pcdtest(fixed, c("cd"))
+
+## Serial Correlation Testing
+pbgtest(fixed)
+
+## Unit Roots / Stationary Testing
+### H0) The null hypothesis is that the series has a unit root (i.e. non-stationary)
+adf.test(pdf$raw_death_rates, k=2)
+
+## Heteroskedasticity testing
+### If hetersokedasticity is detected we need to use a robust covariance matrix (Sandwich estimator) to account for it
+bptest(raw_death_rates ~ ozone + factor(county), data = pdf, studentize=F)
+
+## Controlling for heteroskedasticity: Random effects
+### Original Coefficients
+coeftest(random)
+### Heteroskedasticity consistent coefficients
+coeftest(random, vcovHC) 
+### Heteroskedasticity consistent coefficients, type 3
+coeftest(random, vcovHC(random, type = "HC3")) 
+### The following shows the HC standard errors of the coefficients
+t(sapply(c("HC0", "HC1", "HC2", "HC3", "HC4"), function(x) sqrt(diag(vcovHC(random, type = x)))))
+
+## Controlling for heteroskedasticity: Fixed effects
+### Original coefficients
+coeftest(fixed)
+### Heteroskedasticity consistent coefficients
+coeftest(fixed, vcovHC)
+### Heteroskedasticity consistent coefficients (Arellano)
+coeftest(fixed, vcovHC(fixed, method = "arellano"))
+### Heteroskedasticity consistent coefficients, type 3
+coeftest(fixed, vcovHC(fixed, type = "HC3"))
+### The following shows the HC standard errors of the coefficients
+t(sapply(c("HC0", "HC1", "HC2", "HC3", "HC4"), function(x) sqrt(diag(vcovHC(fixed, type = x)))))
