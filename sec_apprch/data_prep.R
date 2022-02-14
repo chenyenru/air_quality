@@ -28,21 +28,11 @@ revenue <- revenue %>%
 # revenue <- revenue[, c("year", "臺中市")]
 # colnames(revenue)[2] <- "revenue"
 
-lung <- read.delim("DATA/lung_cancer_all.txt", fileEncoding="utf-8")
-colnames(lung)[1] <- "year"
-colnames(lung)[2] <- "sex"
-colnames(lung) <- c("year", "sex", "county", "cancer")
-
-
-
-# lung <- head(lung, -2)
-# lung <- lung %>%
-# gather("sex", "lung_cancer", 3:4)
-
-# lung
-colnames(lung)[1] <- "year"
-colnames(lung)[2] <- "county"
-lung$sex = NULL
+cancer <- read_csv("~/Documents/GitHub/Data_Analysis/air_qu/sec_apprch/DATA/lung_cancer_all.csv")
+View(cancer)
+colnames(cancer) <- c("year", "sex", "county", "cancer", "deaths", "cancer_counts", "mean_age", "median_age", "raw_death_rates")
+lung <- filter(cancer, year>=2015 & cancer=="肺、支氣管及氣管" & (sex=="男" | sex=="女"))
+lung <- lung[, c(1, 3, 2, 4, 5, 6, 7, 8, 9)]
 
 doctors
 ozone
@@ -60,11 +50,3 @@ merge_three <- merge(merge_two, lung, by=c(1, 2))
 
 Sys.setlocale("LC_ALL","Chinese")
 write.csv(merge_three, "DATA/merged.csv")
-
-# Importing the large dataset of all voila
-
-file <- read.csv("DATA/merged.csv")
-file <- file[,-1]
-View(file)
-
-summary(file)
