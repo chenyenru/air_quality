@@ -32,7 +32,7 @@ cancer <- read_csv("~/Documents/GitHub/Data_Analysis/air_qu/sec_apprch/DATA/lung
 View(cancer)
 colnames(cancer) <- c("year", "sex", "county", "cancer", "deaths", "cancer_counts", "mean_age", "median_age", "raw_death_rates")
 # lung <- filter(cancer, year>=2015 & cancer=="肺、支氣管及氣管" & (sex=="男" | sex=="女"))
-lung <- filter(cancer, year>=2015 & cancer=="肺、支氣管及氣管" & (sex=="全"))
+lung <- filter(cancer, cancer=="肺、支氣管及氣管" & (sex=="全"))
 lung <- lung[, c(1, 3, 2, 4, 5, 6, 7, 8, 9)]
 
 doctors
