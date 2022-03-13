@@ -11,9 +11,9 @@
 - 執行機關資源回收量 Recyclable Waste Recycled by Municipal Collection Team
 - 巨大垃圾回收再利用量 Bulk Waste Recycled (ton)
 - 一般廢棄物妥善處理率 rate of material recovery
-- 機車密度
-- 汽車密度
-- 工廠密度
+- 機車密度 Number of locomobiles per square kilometer
+- 汽車密度 Number of automobiles per square kilometer
+- 工廠密度 Number of factories per square kilometer
 
 ### hospital_bed.xlsx
 
