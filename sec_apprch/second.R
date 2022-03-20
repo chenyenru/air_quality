@@ -42,7 +42,7 @@ revenue$revenue <- as.numeric(gsub(",", "", revenue$revenue))
 # lung <- read.delim("DATA/lung_cancer_all.txt", fileEncoding="UTF-8", sep=",")
 lung <- read.csv("DATA/lung_cancer_all.csv")
 colnames(lung) <- c("year", "sex", "county", "cancer", " ", " ", " ", " ", "raw_cancer_rate")
-lung <- subset(lung, !(county %in% c("澎湖縣", "金門縣", "連江縣", "全國")))
+lung <- subset(lung, !(county %in% c("澎湖縣", "金門縣", "連江縣", "全國", "新北市")))
 lung <- subset(lung, sex %in% c("全"))
 lung <- subset(lung, cancer %in% c("肺、支氣管及氣管"))
 lung <- subset(lung, year >= 1998)
@@ -67,8 +67,10 @@ View(revenue)
 merge_two <- merge(ozone, revenue, by = c(1, 2), all = TRUE)
 colnames(merge_two)[1] <- "year"
 View(merge_two)
+merge_two <- merge_two[order(merge_two$year),]
+merge_two <- subset(merge_two, !(county %in% c("新北市")))
 
-merge_three <- merge(merge_two, lung, by = c(2, 1), all = TRUE)
+merge_three <- merge(lung, merge_two, by = c(2,1), all = TRUE)
 colnames(merge_three)[1] <- "year"
 View(merge_three)
 
