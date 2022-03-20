@@ -40,6 +40,8 @@ temp <- merge(temp, locomobiles_density, by=c(1, 2))
 temp <- merge(temp, automobiles_density, by=c(1, 2))
 temp <- merge(temp, factory_density, by=c(1, 2))
 
+temp <- subset(temp, !(county %in% c("澎湖縣", "金門縣", "連江縣", "總計", "新北市", "臺灣地區")))
+
 import <- read.csv("DATA/merged.csv")
 import <- import[,-1]
 View(import)
