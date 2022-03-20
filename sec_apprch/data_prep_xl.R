@@ -40,7 +40,6 @@ temp <- merge(temp, locomobiles_density, by=c(1, 2))
 temp <- merge(temp, automobiles_density, by=c(1, 2))
 temp <- merge(temp, factory_density, by=c(1, 2))
 
-
 import <- read.csv("DATA/merged.csv")
 import <- import[,-1]
 View(import)

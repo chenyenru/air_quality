@@ -64,7 +64,8 @@ pdf <- pdata.frame(file, c("county","year"))
 View(pdf)
 
 
-model<- (raw_death_rates ~ waste_recycled_muni + bulk_waste_recycled + rate_material_recov + locomobiles_density + automobiles_density + factory_density + doctor + ozone + revenue + sex + deaths + mean_age)
+# model<- (raw_death_rates ~ waste_recycled_muni + bulk_waste_recycled + rate_material_recov + locomobiles_density + automobiles_density + factory_density + doctor + ozone + revenue + sex + deaths + mean_age)
+model<- (raw_death_rates ~ waste_recycled_muni + bulk_waste_recycled + rate_material_recov + locomobiles_density + automobiles_density + factory_density + doctor + ozone + revenue)
 # Random Effects Model
 random <- plm(model, data=pdf, model="random")
 summary(random)
