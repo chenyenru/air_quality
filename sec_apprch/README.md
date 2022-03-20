@@ -1,4 +1,4 @@
-## lung_cancer_all.csv
+<!-- ## lung_cancer_all.csv -->
 
 Age-standardized incidence rate per 100,000 standard population
 
@@ -23,9 +23,11 @@ Age-standardized incidence rate per 100,000 standard population
 # Treatment variable
 
 - **空氣中臭氧濃度**
+  - ozone.csv [source](https://statis91.epa.gov.tw/epanet/)
 
 # Observing variable
-
+- 粗率 (每10萬人口)
+  - 也就是肺癌死亡率
 - # Controlled variables
 
 ### environment.xlsx
@@ -50,28 +52,23 @@ Age-standardized incidence rate per 100,000 standard population
 年齡標準化發生率 WHO 2000世界標準人口 (每10萬人口) = Age-standardized incidence rate per 100,000 standard population
 
 - 癌症診斷年
-
 - 性別
-
 - 縣市別
-
 - 癌症別
-
 - 年齡標準化發生率 WHO 2000世界標準人口 (每10萬人口)
-
 - 癌症發生數
-
 - 平均年齡
-
 - 年齡中位數
-
 - 粗率 (每10萬人口)
 
 ### revenue.xlsx
 
 - 平均每人所獲得所得
+  - median.xlsx
+- 中位數每人所獲得所得 [source](https://www.stat.gov.tw/ct.asp?xItem=40875&ctNode=511&mp=4)
+  - med.xlsx
+  - med.csv
 
 ### density.xlsx
-
 - 都市計畫區現況人口密度：(人／平方公里)
 
