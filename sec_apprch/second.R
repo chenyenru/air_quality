@@ -58,20 +58,19 @@ View(lung)
 # lung <- lung %>%
 # gather("sex", "lung_cancer", 3:4)
 
-View(ozone)
-View(revenue)
+# View(ozone)
+# View(revenue)
 
 # merge_one <- merge(doctors, ozone, by = c(1, 2), all = TRUE)
 # View(merge_one)
 
 merge_two <- merge(ozone, revenue, by = c(1, 2), all = TRUE)
 colnames(merge_two)[1] <- "year"
-View(merge_two)
-merge_two <- merge_two[order(merge_two$year),]
+# View(merge_two)
+merge_two <- merge_two[order(merge_two$year), ]
 merge_two <- subset(merge_two, !(county %in% c("新北市")))
 
-merge_three <- merge(lung, merge_two, by = c(2,1), all = TRUE)
-colnames(merge_three)[1] <- "year"
+merge_three <- merge(lung, merge_two, by = c(1, 2), all = TRUE)
 View(merge_three)
 
 Sys.setlocale("LC_ALL", "Chinese")
