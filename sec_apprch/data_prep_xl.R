@@ -45,9 +45,10 @@ temp2 <- merge(temp1, automobiles_density, by = c(1, 2))
 View(temp2)
 temp3 <- merge(temp2, factory_density, by = c(1, 2))
 View(temp3)
-temp4 <- subset(temp3, !(county %in% c("澎湖縣", "金門縣", "連江縣", "總計", "新北市", "臺灣地區")))
+temp4 <- merge(temp3, urban_density, by = c(1, 2))
+temp5 <- subset(temp4, !(county %in% c("澎湖縣", "金門縣", "連江縣", "總計", "新北市", "臺灣地區")))
 
-View(temp4)
+View(temp5)
 
 import <- read.csv("DATA/merged.csv")
 import <- import[, -1]
@@ -58,3 +59,4 @@ final <- merge(temp4, import, by = c(1, 2))
 
 View(final)
 write.csv(final, "DATA/merge2.csv")
+
