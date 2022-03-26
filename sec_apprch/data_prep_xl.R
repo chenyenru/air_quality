@@ -32,10 +32,23 @@ waste_recycled_muni <- read.csv("DATA/more/執行機關資源回收量.csv")
 
 
 bulk_waste_recycled <- gather(` 巨大垃圾回收再利用量`, "county", "bulk_waste_recycled", -year)
-# rate_material_recov <- gather(` 一般廢棄物妥善處理率`, "county", "rate_material_recov", -year)
+
+一般廢棄物妥善處理率 <- read.csv("DATA/more/一般廢棄物妥善處理率.csv")
+rate_material_recov <- gather(`一般廢棄物妥善處理率`, "county", "rate_material_recov", -year)
+
+`家庭收支-平均儲蓄傾向` <- read.csv("DATA/more/家庭收支-平均儲蓄傾向.csv")
+family_income <- gather(`家庭收支-平均儲蓄傾向`, "county", "family_income", -year)
+
+`就業者之行業結構-工業` <- read.csv("DATA/more/就業者之行業結構-工業.csv")
+employee_industrial <- gather(`就業者之行業結構-工業`, "county", "employee_industrial", -year)
+
+factory_density <- gather(` 工廠密度`, "county", "factory_density", -year)
+
 locomobiles_density <- gather(` 機車密度`, "county", "locomobiles_density", -year)
 automobiles_density <- gather(` 汽車密度`, "county", "automobiles_density", -year)
 factory_density <- gather(` 工廠密度`, "county", "factory_density", -year)
+factory_density <- gather(` 工廠密度`, "county", "factory_density", -year)
+
 
 # temp <- merge(waste_recycled_muni, bulk_waste_recycled, by = c(1, 2))
 # temp <- merge(temp, rate_material_recov, by = c(1, 2))
@@ -46,15 +59,18 @@ View(temp2)
 temp3 <- merge(temp2, factory_density, by = c(1, 2))
 View(temp3)
 temp4 <- merge(temp3, urban_density, by = c(1, 2))
-temp5 <- subset(temp4, !(county %in% c("澎湖縣", "金門縣", "連江縣", "總計", "新北市", "臺灣地區")))
+temp5 <- merge(temp4, hospital_bed, by = c(1, 2))
+temp6 <- merge(temp5, rate_material_recov, by = c(1, 2))
+temp7 <- merge(temp6, employee_industrial, by = c(1, 2))
+temp8 <- merge(temp7, family_income, by = c(1, 2))
 
-View(temp5)
+temp9 <- subset(temp8, !(county %in% c("澎湖縣", "金門縣", "連江縣", "總計", "新北市", "臺灣地區")))
 
 import <- read.csv("DATA/merged.csv")
 import <- import[, -1]
 View(import)
 
-final <- merge(temp4, import, by = c(1, 2))
+final <- merge(temp9, import, by = c(1, 2))
 
 
 View(final)
