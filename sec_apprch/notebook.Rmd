@@ -1,3 +1,11 @@
+---
+title: "Panel Analysis"
+output: html_notebook
+---
+
+# Preparation
+## Get the dataset
+```{r}
 df <- read.csv("DATA/merge2.csv")
 View(df)
 df <- df[, -1]
@@ -21,8 +29,12 @@ summary(file)
 colnames(file)[8] <- "raw_death_rates"
 colnames(file)[8]
 
+# Change factory_density's data type from character to numeric
+file$factory_density <- as.numeric(as.character(file$factory_density))
+```
 
-# Starting the analysis HERE
+## Get the packages
+```{r}
 library(tidyverse) # Modern data science library
 library(plm) # Panel data analysis library
 library(car) # Companion to applied regression
@@ -33,116 +45,153 @@ library(dplyr)
 library(showtext)
 
 showtext_auto(enable = TRUE)
-# font_families()
-# coplot(ozone ~ year|county, type="b", data=file, family="source-han-serif-tw")
-# scatterplot(ozone~year|county, data=file, family="source-han-serif-tw")
-#
-# ## Heterogeniety across countries
-# plotmeans(ozone ~ county, data = file, family="arial")
-#
-# ## Heterogeneity across years
-# plotmeans(ozone ~ year, data = file, family="serif")
-#
-# # Basic OLS Model
-# ols <-lm(ozone ~ doctor, data = file)
-# summary(ols)
-# yhat <- ols$fitted
-# ggplot(file, aes(x = doctor, y = ozone))+
-#   geom_point() +
-#   geom_smooth(method=lm)
-#
-# # Fixed Effects Model
-# library(car)
-# fixed.dum <-lm(ozone ~ doctor + factor(county) - 1, data = file)
-# summary(fixed.dum)
-# yhat <- fixed.dum$fitted
-# scatterplot(yhat ~ file$doctor | file$county,  xlab ="doctor", ylab ="yhat of ozone", boxplots = FALSE,smooth = FALSE)
-# abline(lm(file$y~file$doctor),lwd=3, col="red")
+```
 
-
-# "year", "county", "waste_recycled_muni", "locomobiles_density", "automobiles_density", "factory_density", "urban_density", "ozone", "revenue"
-# year, county, waste_recycled_muni, locomobiles_density, automobiles_density, factory_density, urban_density, raw_cancer_rate, ozone, revenue
-# raw_death_rates ~ year + county + waste_recycled_muni + locomobiles_density + automobiles_density + factory_density + urban_density + ozone + revenue
-
-file$factory_density <- as.numeric(as.character(file$factory_density))
-
+## Get ready for plm
+```{r}
+# Check columns' data type
 file %>% summarise_all(funs(class))
+
+# An object of class 'pdata.frame' is a data.frame with an index attribute that describes its individual and time dimensions.
 pdf <- pdata.frame(file, c("county", "year"))
+
+# View pdf
 View(pdf)
+```
 
+# Analysis
+## The model of all
 
-# model<- (raw_death_rates ~ waste_recycled_muni + bulk_waste_recycled + rate_material_recov + locomobiles_density + automobiles_density + factory_density + doctor + ozone + revenue + sex + deaths + mean_age)
+This is the model that includes all variables:
+```
+model<- (raw_death_rates ~ waste_recycled_muni + bulk_waste_recycled + rate_material_recov + locomobiles_density + automobiles_density + factory_density + doctor + ozone + revenue + sex + deaths + mean_age)
+```
+
+This is the one we'll be using
+```{r}
 model <- (raw_death_rates ~ waste_recycled_muni + locomobiles_density + automobiles_density + factory_density + urban_density + ozone + revenue)
-# Random Effects Model
-random <- plm(model, data = pdf, model = "random")
-# random.method = "amemiya"
-summary(random)
+```
 
-# Fixed Effects Model
+## The 2 "Effects" Model
+### Random Effects Model
+```{r}
+random <- plm(model, data = pdf, model = "random")
+summary(random)
+```
+
+### Fixed Effects Model
+```{r}
 fixed <- plm(model, data = pdf, model = "within")
 summary(fixed)
+```
 
-
-
-# Fixed vs. Random
-# H0) = Random Effects Model is efficient
-# H1) = Fixed Effects Model is efficient
-# if a > 0.05:
-#   We should use the random effects model
+### Compare the 2 Effects Model
+H0) = Random Effects Model is efficient
+H1) = Fixed Effects Model is efficient
+  if a > 0.05:
+    We should use the random effects model
+    
+```{r}
 phtest(fixed, random)
+```
 
-# Regression Diagnostics
-## Time-fixed effects
+## Regression Diagnostics
+### Time-fixed effects
+```{r}
 fixed.time <- plm(raw_death_rates ~ ozone + factor(year) + waste_recycled_muni + locomobiles_density + automobiles_density + factory_density + urban_density + revenue, data = pdf, model = "within")
 summary(fixed.time)
+```
 
-## Testing Time-fixed effects model. The null hypothesis is that no time-fixed effects are needed
+### Testing Time-fixed effects model. The null hypothesis is that no time-fixed effects are needed
+```{r}
 pFtest(fixed.time, fixed)
 plmtest(fixed, c("time"), type = ("bp"))
+```
+
 ### If the p value < 0.05 then use time-fixed effects.
 ### In this example, no need to use time-fixed effects.
 
 ## Random effects vs Pooled OLS
+```{r}
 pool <- plm(raw_death_rates ~ ozone, data = pdf, model = "pooling")
 summary(pool)
+```
+
 
 ## Breusch-Pagan Lagrange Multiplier for random effects. Null is no panel effect (i.e. OLS better).
+```{r}
 plmtest(pool, type = c("bp"))
+```
+
 
 ## Cross-sectional dependence testing
+```{r}
 fixed <- plm(raw_death_rates ~ ozone, data = pdf, model = "within")
 pcdtest(fixed, c("lm"))
 pcdtest(fixed, c("cd"))
+```
 
 ## Serial Correlation Testing
+```{r}
 pbgtest(fixed)
+```
+
 
 ## Unit Roots / Stationary Testing
 ### H0) The null hypothesis is that the series has a unit root (i.e. non-stationary)
+```{r}
 adf.test(pdf$raw_death_rates, k = 2)
+```
+
 
 ## Heteroskedasticity testing
-### If hetersokedasticity is detected we need to use a robust covariance matrix (Sandwich estimator) to account for it
+If hetersokedasticity is detected we need to use a robust covariance matrix (Sandwich estimator) to account for it
+```{r}
 bptest(raw_death_rates ~ ozone + factor(county), data = pdf, studentize = F)
+```
 
 ## Controlling for heteroskedasticity: Random effects
 ### Original Coefficients
+```{r}
 coeftest(random)
+```
+
 ### Heteroskedasticity consistent coefficients
+```{r}
 coeftest(random, vcovHC)
+```
+
 ### Heteroskedasticity consistent coefficients, type 3
+```{r}
 coeftest(random, vcovHC(random, type = "HC3"))
+```
+
 ### The following shows the HC standard errors of the coefficients
+```{r}
 t(sapply(c("HC0", "HC1", "HC2", "HC3", "HC4"), function(x) sqrt(diag(vcovHC(random, type = x)))))
+```
+
 
 ## Controlling for heteroskedasticity: Fixed effects
 ### Original coefficients
+```{r}
 coeftest(fixed)
+```
 ### Heteroskedasticity consistent coefficients
+```{r}
 coeftest(fixed, vcovHC)
+```
 ### Heteroskedasticity consistent coefficients (Arellano)
+```{r}
 coeftest(fixed, vcovHC(fixed, method = "arellano"))
+```
 ### Heteroskedasticity consistent coefficients, type 3
+```{r}
 coeftest(fixed, vcovHC(fixed, type = "HC3"))
+```
 ### The following shows the HC standard errors of the coefficients
+```{r}
 t(sapply(c("HC0", "HC1", "HC2", "HC3", "HC4"), function(x) sqrt(diag(vcovHC(fixed, type = x)))))
+```
+
+
