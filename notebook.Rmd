@@ -1,14 +1,10 @@
 ---
 title: "Panel Analysis"
-<<<<<<< Updated upstream:sec_apprch/notebook.Rmd
-output: html_notebook
-=======
 author: "Yen-Ru Chen"
 output:
   html_document:
     toc: true
     toc_float: true
->>>>>>> Stashed changes:notebook.Rmd
 ---
 Adapted from [Getting Started in Fixed/Random Effects Models using R](https://dss.princeton.edu/training/Panel101R.pdf) from [Oscar Torres-Reyna](https://dss.princeton.edu/training/).
 # Preparation
@@ -33,7 +29,7 @@ sum(is.na(df))
 file <- df
 
 
-colnames(file)[12] <- "raw_death_rates" 
+colnames(file)[12] <- "raw_death_rates"
 summary(file)
 # colnames(file)[8]
 
@@ -78,8 +74,8 @@ model<- (raw_death_rates ~ waste_recycled_muni + locomobiles_density + automobil
 
 This is the one we'll be using
 ```{r}
-model<- (raw_death_rates ~ waste_recycled_muni + automobiles_density + hospital_bed + ozone + revenue + employee_industrial + rate_material_recov + family_income)
-for_map = subset(pdf, select = -c(county, year))
+model <- (raw_death_rates ~ waste_recycled_muni + automobiles_density + hospital_bed + ozone + revenue + employee_industrial + rate_material_recov + family_income)
+for_map <- subset(pdf, select = -c(county, year))
 heatmap(for_map)
 View(for_map)
 ```
