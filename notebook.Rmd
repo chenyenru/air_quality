@@ -1,5 +1,10 @@
 ---
 title: "Panel Analysis"
+knit: (function(input_file, encoding) {
+  out_dir <- 'docs';
+  rmarkdown::render(input_file,
+ encoding=encoding,
+ output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
 output:
   html_document:
     toc: true
@@ -113,9 +118,9 @@ summary(fixed.time)
 
 ### Testing Time-fixed effects model. The null hypothesis is that no time-fixed effects are needed
 ```{r}
-fixed.time <- plm(raw_death_rates ~ ozone + factor(year) + hospital_bed + waste_recycled_muni + automobiles_density + revenue, data = pdf, model = "within")
-pFtest(fixed.time, fixed)
-plmtest(fixed, c("time"), type = ("bp"))
+# fixed.time <- plm(raw_death_rates ~ ozone + factor(year) + hospital_bed + waste_recycled_muni + automobiles_density + revenue, data = pdf, model = "within")
+# pFtest(fixed.time, fixed)
+# plmtest(fixed, c("time"), type = ("bp"))
 ```
 
 ### If the p value < 0.05 then use time-fixed effects.

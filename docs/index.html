@@ -2855,22 +2855,9 @@ summary(fixed.time)</code></pre>
 <div id="testing-time-fixed-effects-model.-the-null-hypothesis-is-that-no-time-fixed-effects-are-needed" class="section level3">
 <h3>Testing Time-fixed effects model. The null hypothesis is that no
 time-fixed effects are needed</h3>
-<pre class="r"><code>fixed.time &lt;- plm(raw_death_rates ~ ozone + factor(year) + hospital_bed + waste_recycled_muni + automobiles_density + revenue, data = pdf, model = &quot;within&quot;)
-pFtest(fixed.time, fixed)</code></pre>
-<pre><code>## 
-##  F test for individual effects
-## 
-## data:  raw_death_rates ~ ozone + factor(year) + hospital_bed + waste_recycled_muni +  ...
-## F = 45.257, df1 = 15, df2 = 301, p-value &lt; 2.2e-16
-## alternative hypothesis: significant effects</code></pre>
-<pre class="r"><code>plmtest(fixed, c(&quot;time&quot;), type = (&quot;bp&quot;))</code></pre>
-<pre><code>## 
-##  Lagrange Multiplier Test - time effects (Breusch-Pagan) for balanced
-##  panels
-## 
-## data:  model
-## chisq = 190.92, df = 1, p-value &lt; 2.2e-16
-## alternative hypothesis: significant effects</code></pre>
+<pre class="r"><code># fixed.time &lt;- plm(raw_death_rates ~ ozone + factor(year) + hospital_bed + waste_recycled_muni + automobiles_density + revenue, data = pdf, model = &quot;within&quot;)
+# pFtest(fixed.time, fixed)
+# plmtest(fixed, c(&quot;time&quot;), type = (&quot;bp&quot;))</code></pre>
 </div>
 <div id="if-the-p-value-0.05-then-use-time-fixed-effects." class="section level3">
 <h3>If the p value &lt; 0.05 then use time-fixed effects.</h3>
