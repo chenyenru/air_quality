@@ -149,16 +149,16 @@ model<- (raw_death_rates ~ waste_recycled_muni + bulk_waste_recycled + rate_mate
 ```{r}
 # fixed.time <- plm(raw_death_rates ~ ozone + factor(year) + hospital_bed + waste_recycled_muni + automobiles_density + revenue, data = pdf, model = "within")
 
-fixed.time <- plm(raw_death_rates ~ waste_recycled_muni + locomobiles_density + automobiles_density + hospital_bed + ozone + revenue + employee_industrial + family_income + rate_material_recov + so2 + pm + factor(year), data = pdf, model = "within")
+fixed.time <- plm(raw_death_rates ~ waste_recycled_muni + locomobiles_density + automobiles_density + hospital_bed + ozone + revenue + employee_industrial + family_income + rate_material_recov + so2 + pm, data = pdf, model = "within")
 summary(fixed.time)
 ```
 
 
 ### Testing Time-fixed effects model. The null hypothesis is that no time-fixed effects are needed
 ```{r}
-# fixed.time <- plm(raw_death_rates ~ ozone + factor(year) + hospital_bed + waste_recycled_muni + automobiles_density + revenue, data = pdf, model = "within")
-pFtest(fixed.time, fixed)
-plmtest(fixed, c("time"), type = ("bp"))
+# fixed.time <- plm(raw_death_rates ~ waste_recycled_muni + locomobiles_density + automobiles_density + hospital_bed + ozone + revenue + employee_industrial + family_income + rate_material_recov + so2 + pm + data = pdf, model = "within")
+# pFtest(fixed.time, fixed)
+# plmtest(fixed, c("time"), type = ("bp"))
 ```
 
 ### If the p value < 0.05 then use time-fixed effects.
