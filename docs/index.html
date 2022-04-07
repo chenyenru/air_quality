@@ -9,6 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
+<meta name="author" content="Yen-Ru Chen" />
 
 
 <title>Panel Analysis</title>
@@ -1509,6 +1510,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Panel Analysis</h1>
+<h4 class="author">Yen-Ru Chen</h4>
 
 </div>
 
@@ -1516,7 +1518,7 @@ div.tocify {
 <p>Adapted from <a href="https://dss.princeton.edu/training/Panel101R.pdf">Getting Started
 in Fixed/Random Effects Models using R</a> from <a href="https://dss.princeton.edu/training/">Oscar Torres-Reyna</a>. #
 Preparation ## Get the dataset</p>
-<pre class="r"><code>df &lt;- read.csv(&quot;~/Documents/GitHub/Data_Analysis/air_qu/sec_apprch/DATA/merge2.csv&quot;)
+<pre class="r"><code>df &lt;- read.csv(&quot;sec_apprch/DATA/merge2.csv&quot;)
 # View(df)
 df &lt;- df[, -1]
 # View(df)
@@ -2700,7 +2702,7 @@ colnames(pdf)</code></pre>
 <p>This is the model that includes all variables:</p>
 <pre><code>model&lt;- (raw_death_rates ~ waste_recycled_muni + locomobiles_density + automobiles_density + factory_density + hospital_bed + ozone + revenue + employee_industrial + family_income + rate_material_recov)</code></pre>
 <p>This is the one we’ll be using</p>
-<pre class="r"><code>model &lt;- (raw_death_rates ~ waste_recycled_muni + automobiles_density + hospital_bed + ozone + revenue + employee_industrial + rate_material_recov + family_income)
+<pre class="r"><code>model &lt;- (raw_death_rates ~ waste_recycled_muni + automobiles_density + hospital_bed + ozone + revenue + employee_industrial + rate_material_recov)
 # for_map &lt;- subset(pdf, select = -c(county, year))
 # View(for_map)
 # heatmap(for_map)</code></pre>
@@ -2721,33 +2723,32 @@ summary(random)</code></pre>
 ## 
 ## Effects:
 ##                  var std.dev share
-## idiosyncratic 38.239   6.184 0.444
-## individual    47.800   6.914 0.556
-## theta: 0.799
+## idiosyncratic 38.163   6.178 0.457
+## individual    45.387   6.737 0.543
+## theta: 0.7941
 ## 
 ## Residuals:
-##      Min.   1st Qu.    Median   3rd Qu.      Max. 
-## -15.27450  -5.16133  -0.34041   4.57204  17.64801 
+##     Min.  1st Qu.   Median  3rd Qu.     Max. 
+## -15.4442  -5.1862  -0.3191   4.5675  17.3903 
 ## 
 ## Coefficients:
 ##                        Estimate  Std. Error z-value  Pr(&gt;|z|)    
-## (Intercept)         -2.3465e+01  1.1964e+01 -1.9613 0.0498456 *  
-## waste_recycled_muni  8.7181e-05  6.2229e-06 14.0096 &lt; 2.2e-16 ***
-## automobiles_density -2.7994e-03  2.9949e-03 -0.9347 0.3499426    
-## hospital_bed         4.0976e-01  6.1285e-02  6.6861 2.292e-11 ***
-## ozone               -1.9904e+00  4.0500e-01 -4.9147 8.892e-07 ***
-## revenue              3.6130e-05  8.0827e-06  4.4700 7.821e-06 ***
-## employee_industrial  2.0740e-01  1.7290e-01  1.1995 0.2303191    
-## rate_material_recov  2.8104e-01  7.3441e-02  3.8267 0.0001299 ***
-## family_income       -1.0915e-01  1.2387e-01 -0.8811 0.3782386    
+## (Intercept)         -2.7223e+01  1.0595e+01 -2.5693   0.01019 *  
+## waste_recycled_muni  8.8366e-05  6.1619e-06 14.3408 &lt; 2.2e-16 ***
+## automobiles_density -2.8960e-03  2.9472e-03 -0.9826   0.32579    
+## hospital_bed         4.0427e-01  6.0637e-02  6.6671 2.608e-11 ***
+## ozone               -2.0162e+00  4.0059e-01 -5.0331 4.827e-07 ***
+## revenue              3.5340e-05  8.0580e-06  4.3857 1.156e-05 ***
+## employee_industrial  2.0541e-01  1.7085e-01  1.2023   0.22924    
+## rate_material_recov  3.0162e-01  7.0271e-02  4.2923 1.768e-05 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
-## Total Sum of Squares:    40455
-## Residual Sum of Squares: 16647
-## R-Squared:      0.5885
-## Adj. R-Squared: 0.57861
-## Chisq: 476.23 on 8 DF, p-value: &lt; 2.22e-16</code></pre>
+## Total Sum of Squares:    40489
+## Residual Sum of Squares: 16800
+## R-Squared:      0.58508
+## Adj. R-Squared: 0.57639
+## Chisq: 470.979 on 7 DF, p-value: &lt; 2.22e-16</code></pre>
 </div>
 <div id="fixed-effects-model" class="section level3">
 <h3>Fixed Effects Model</h3>
@@ -2762,26 +2763,25 @@ summary(fixed)</code></pre>
 ## 
 ## Residuals:
 ##      Min.   1st Qu.    Median   3rd Qu.      Max. 
-## -15.35468  -4.52995  -0.68213   3.93784  17.27620 
+## -15.81165  -4.50174  -0.53747   3.79076  17.57222 
 ## 
 ## Coefficients:
 ##                        Estimate  Std. Error t-value  Pr(&gt;|t|)    
-## waste_recycled_muni  6.0290e-05  6.2943e-06  9.5785 &lt; 2.2e-16 ***
-## automobiles_density  2.9286e-02  6.5719e-03  4.4563 1.159e-05 ***
-## hospital_bed         6.7151e-01  8.3975e-02  7.9966 2.437e-14 ***
-## ozone               -4.1958e-01  6.4233e-01 -0.6532   0.51410    
-## revenue              3.6544e-05  7.2438e-06  5.0449 7.669e-07 ***
-## employee_industrial  2.5226e-01  2.4122e-01  1.0458   0.29645    
-## rate_material_recov  2.1528e-01  6.7938e-02  3.1688   0.00168 ** 
-## family_income       -6.6772e-02  1.1041e-01 -0.6047   0.54579    
+## waste_recycled_muni  6.0694e-05  6.2525e-06  9.7073 &lt; 2.2e-16 ***
+## automobiles_density  2.9362e-02  6.5641e-03  4.4731 1.075e-05 ***
+## hospital_bed         6.7440e-01  8.3755e-02  8.0520 1.661e-14 ***
+## ozone               -4.0249e-01  6.4107e-01 -0.6278 0.5305585    
+## revenue              3.6076e-05  7.1952e-06  5.0139 8.890e-07 ***
+## employee_industrial  2.5477e-01  2.4094e-01  1.0574 0.2911319    
+## rate_material_recov  2.2620e-01  6.5432e-02  3.4570 0.0006207 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## Total Sum of Squares:    39752
-## Residual Sum of Squares: 12084
-## R-Squared:      0.69602
-## Adj. R-Squared: 0.67197
-## F-statistic: 90.4443 on 8 and 316 DF, p-value: &lt; 2.22e-16</code></pre>
+## Residual Sum of Squares: 12098
+## R-Squared:      0.69567
+## Adj. R-Squared: 0.67263
+## F-statistic: 103.52 on 7 and 317 DF, p-value: &lt; 2.22e-16</code></pre>
 </div>
 <div id="compare-the-2-effects-model" class="section level3">
 <h3>Compare the 2 Effects Model</h3>
@@ -2792,7 +2792,7 @@ efficient if a &gt; 0.05: We should use the random effects model</p>
 ##  Hausman Test
 ## 
 ## data:  model
-## chisq = 182.18, df = 8, p-value &lt; 2.2e-16
+## chisq = 186.84, df = 7, p-value &lt; 2.2e-16
 ## alternative hypothesis: one model is inconsistent</code></pre>
 </div>
 </div>
@@ -2912,15 +2912,15 @@ pcdtest(fixed, c(&quot;lm&quot;))</code></pre>
 <pre><code>## 
 ##  Breusch-Pagan LM test for cross-sectional dependence in panels
 ## 
-## data:  raw_death_rates ~ waste_recycled_muni + automobiles_density +     hospital_bed + ozone + revenue + employee_industrial + rate_material_recov +     family_income
-## chisq = 605.03, df = 153, p-value &lt; 2.2e-16
+## data:  raw_death_rates ~ waste_recycled_muni + automobiles_density +     hospital_bed + ozone + revenue + employee_industrial + rate_material_recov
+## chisq = 604.84, df = 153, p-value &lt; 2.2e-16
 ## alternative hypothesis: cross-sectional dependence</code></pre>
 <pre class="r"><code>pcdtest(fixed, c(&quot;cd&quot;))</code></pre>
 <pre><code>## 
 ##  Pesaran CD test for cross-sectional dependence in panels
 ## 
-## data:  raw_death_rates ~ waste_recycled_muni + automobiles_density +     hospital_bed + ozone + revenue + employee_industrial + rate_material_recov +     family_income
-## z = 17.601, p-value &lt; 2.2e-16
+## data:  raw_death_rates ~ waste_recycled_muni + automobiles_density +     hospital_bed + ozone + revenue + employee_industrial + rate_material_recov
+## z = 17.57, p-value &lt; 2.2e-16
 ## alternative hypothesis: cross-sectional dependence</code></pre>
 </div>
 <div id="serial-correlation-testing" class="section level2">
@@ -2930,7 +2930,7 @@ pcdtest(fixed, c(&quot;lm&quot;))</code></pre>
 ##  Breusch-Godfrey/Wooldridge test for serial correlation in panel models
 ## 
 ## data:  model
-## chisq = 136.84, df = 19, p-value &lt; 2.2e-16
+## chisq = 136.08, df = 19, p-value &lt; 2.2e-16
 ## alternative hypothesis: serial correlation in idiosyncratic errors</code></pre>
 </div>
 <div id="unit-roots-stationary-testing" class="section level2">
@@ -2969,15 +2969,14 @@ matrix (Sandwich estimator) to account for it</p>
 ## t test of coefficients:
 ## 
 ##                        Estimate  Std. Error t value  Pr(&gt;|t|)    
-## (Intercept)         -2.3465e+01  1.1964e+01 -1.9613 0.0506786 .  
-## waste_recycled_muni  8.7181e-05  6.2229e-06 14.0096 &lt; 2.2e-16 ***
-## automobiles_density -2.7994e-03  2.9949e-03 -0.9347 0.3506199    
-## hospital_bed         4.0976e-01  6.1285e-02  6.6861 9.678e-11 ***
-## ozone               -1.9904e+00  4.0500e-01 -4.9147 1.398e-06 ***
-## revenue              3.6130e-05  8.0827e-06  4.4700 1.074e-05 ***
-## employee_industrial  2.0740e-01  1.7290e-01  1.1995 0.2311718    
-## rate_material_recov  2.8104e-01  7.3441e-02  3.8267 0.0001551 ***
-## family_income       -1.0915e-01  1.2387e-01 -0.8811 0.3788741    
+## (Intercept)         -2.7223e+01  1.0595e+01 -2.5693   0.01062 *  
+## waste_recycled_muni  8.8366e-05  6.1619e-06 14.3408 &lt; 2.2e-16 ***
+## automobiles_density -2.8960e-03  2.9472e-03 -0.9826   0.32650    
+## hospital_bed         4.0427e-01  6.0637e-02  6.6671 1.081e-10 ***
+## ozone               -2.0162e+00  4.0059e-01 -5.0331 7.905e-07 ***
+## revenue              3.5340e-05  8.0580e-06  4.3857 1.552e-05 ***
+## employee_industrial  2.0541e-01  1.7085e-01  1.2023   0.23010    
+## rate_material_recov  3.0162e-01  7.0271e-02  4.2923 2.320e-05 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 </div>
@@ -2988,15 +2987,14 @@ matrix (Sandwich estimator) to account for it</p>
 ## t test of coefficients:
 ## 
 ##                        Estimate  Std. Error t value  Pr(&gt;|t|)    
-## (Intercept)         -2.3465e+01  1.2306e+01 -1.9068 0.0574112 .  
-## waste_recycled_muni  8.7181e-05  1.6362e-05  5.3282 1.831e-07 ***
-## automobiles_density -2.7994e-03  3.7378e-03 -0.7489 0.4544304    
-## hospital_bed         4.0976e-01  1.0075e-01  4.0672 5.945e-05 ***
-## ozone               -1.9904e+00  5.3103e-01 -3.7483 0.0002098 ***
-## revenue              3.6130e-05  2.3288e-05  1.5514 0.1217537    
-## employee_industrial  2.0740e-01  2.6793e-01  0.7741 0.4394392    
-## rate_material_recov  2.8104e-01  1.2829e-01  2.1907 0.0291671 *  
-## family_income       -1.0915e-01  1.3946e-01 -0.7827 0.4343788    
+## (Intercept)         -2.7223e+01  1.1766e+01 -2.3137 0.0212927 *  
+## waste_recycled_muni  8.8367e-05  1.6071e-05  5.4984 7.626e-08 ***
+## automobiles_density -2.8960e-03  3.7249e-03 -0.7775 0.4374320    
+## hospital_bed         4.0427e-01  1.0319e-01  3.9177 0.0001084 ***
+## ozone               -2.0162e+00  5.3267e-01 -3.7850 0.0001821 ***
+## revenue              3.5340e-05  2.3683e-05  1.4922 0.1365945    
+## employee_industrial  2.0541e-01  2.6564e-01  0.7733 0.4399149    
+## rate_material_recov  3.0162e-01  1.2603e-01  2.3933 0.0172473 *  
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 </div>
@@ -3007,15 +3005,14 @@ matrix (Sandwich estimator) to account for it</p>
 ## t test of coefficients:
 ## 
 ##                        Estimate  Std. Error t value  Pr(&gt;|t|)    
-## (Intercept)         -2.3465e+01  1.2824e+01 -1.8297 0.0681818 .  
-## waste_recycled_muni  8.7181e-05  1.7539e-05  4.9707  1.07e-06 ***
-## automobiles_density -2.7994e-03  3.9245e-03 -0.7133 0.4761546    
-## hospital_bed         4.0976e-01  1.0532e-01  3.8906 0.0001208 ***
-## ozone               -1.9904e+00  5.6424e-01 -3.5277 0.0004781 ***
-## revenue              3.6130e-05  2.4303e-05  1.4866 0.1380576    
-## employee_industrial  2.0740e-01  2.7663e-01  0.7497 0.4539425    
-## rate_material_recov  2.8104e-01  1.3667e-01  2.0564 0.0405253 *  
-## family_income       -1.0915e-01  1.4506e-01 -0.7525 0.4523047    
+## (Intercept)         -2.7223e+01  1.2343e+01 -2.2055 0.0281008 *  
+## waste_recycled_muni  8.8367e-05  1.7192e-05  5.1399 4.688e-07 ***
+## automobiles_density -2.8960e-03  3.9010e-03 -0.7424 0.4583890    
+## hospital_bed         4.0427e-01  1.0762e-01  3.7566 0.0002032 ***
+## ozone               -2.0162e+00  5.6473e-01 -3.5702 0.0004091 ***
+## revenue              3.5340e-05  2.4699e-05  1.4308 0.1534260    
+## employee_industrial  2.0541e-01  2.7391e-01  0.7499 0.4538232    
+## rate_material_recov  3.0162e-01  1.3423e-01  2.2471 0.0252882 *  
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 </div>
@@ -3023,17 +3020,17 @@ matrix (Sandwich estimator) to account for it</p>
 <h3>The following shows the HC standard errors of the coefficients</h3>
 <pre class="r"><code>t(sapply(c(&quot;HC0&quot;, &quot;HC1&quot;, &quot;HC2&quot;, &quot;HC3&quot;, &quot;HC4&quot;), function(x) sqrt(diag(vcovHC(random, type = x)))))</code></pre>
 <pre><code>##     (Intercept) waste_recycled_muni automobiles_density hospital_bed     ozone
-## HC0    12.30599        1.636217e-05         0.003737849    0.1007482 0.5310250
-## HC1    12.47118        1.658181e-05         0.003788024    0.1021006 0.5381532
-## HC2    12.55696        1.693697e-05         0.003827744    0.1029839 0.5471291
-## HC3    12.82400        1.753886e-05         0.003924493    0.1053205 0.5642370
-## HC4    12.99088        1.822483e-05         0.004036790    0.1066920 0.5855844
-##          revenue employee_industrial rate_material_recov family_income
-## HC0 2.328840e-05           0.2679320           0.1282866     0.1394610
-## HC1 2.360101e-05           0.2715286           0.1300087     0.1413330
-## HC2 2.378701e-05           0.2721884           0.1323646     0.1422104
-## HC3 2.430310e-05           0.2766275           0.1366658     0.1450592
-## HC4 2.439798e-05           0.2763404           0.1420962     0.1456268</code></pre>
+## HC0    11.76612        1.607124e-05         0.003724888    0.1031909 0.5326744
+## HC1    11.90620        1.626257e-05         0.003769233    0.1044194 0.5390160
+## HC2    12.04621        1.661892e-05         0.003809762    0.1053555 0.5482252
+## HC3    12.34326        1.719215e-05         0.003901037    0.1076177 0.5647323
+## HC4    12.59476        1.800617e-05         0.004040188    0.1094073 0.5904082
+##          revenue employee_industrial rate_material_recov
+## HC0 2.368318e-05           0.2656422           0.1260266
+## HC1 2.396513e-05           0.2688047           0.1275270
+## HC2 2.418241e-05           0.2696825           0.1300220
+## HC3 2.469946e-05           0.2739056           0.1342303
+## HC4 2.493608e-05           0.2743986           0.1400903</code></pre>
 </div>
 </div>
 <div id="controlling-for-heteroskedasticity-fixed-effects" class="section level2">
@@ -3045,14 +3042,13 @@ matrix (Sandwich estimator) to account for it</p>
 ## t test of coefficients:
 ## 
 ##                        Estimate  Std. Error t value  Pr(&gt;|t|)    
-## waste_recycled_muni  6.0290e-05  6.2943e-06  9.5785 &lt; 2.2e-16 ***
-## automobiles_density  2.9286e-02  6.5719e-03  4.4563 1.159e-05 ***
-## hospital_bed         6.7151e-01  8.3975e-02  7.9966 2.437e-14 ***
-## ozone               -4.1958e-01  6.4233e-01 -0.6532   0.51410    
-## revenue              3.6544e-05  7.2438e-06  5.0449 7.669e-07 ***
-## employee_industrial  2.5226e-01  2.4122e-01  1.0458   0.29645    
-## rate_material_recov  2.1528e-01  6.7938e-02  3.1688   0.00168 ** 
-## family_income       -6.6772e-02  1.1041e-01 -0.6047   0.54579    
+## waste_recycled_muni  6.0694e-05  6.2525e-06  9.7073 &lt; 2.2e-16 ***
+## automobiles_density  2.9362e-02  6.5641e-03  4.4731 1.075e-05 ***
+## hospital_bed         6.7440e-01  8.3755e-02  8.0520 1.661e-14 ***
+## ozone               -4.0249e-01  6.4107e-01 -0.6278 0.5305585    
+## revenue              3.6076e-05  7.1952e-06  5.0139 8.890e-07 ***
+## employee_industrial  2.5477e-01  2.4094e-01  1.0574 0.2911319    
+## rate_material_recov  2.2620e-01  6.5432e-02  3.4570 0.0006207 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 </div>
@@ -3063,14 +3059,13 @@ matrix (Sandwich estimator) to account for it</p>
 ## t test of coefficients:
 ## 
 ##                        Estimate  Std. Error t value  Pr(&gt;|t|)    
-## waste_recycled_muni  6.0290e-05  1.4665e-05  4.1112 5.024e-05 ***
-## automobiles_density  2.9286e-02  5.6032e-03  5.2266 3.143e-07 ***
-## hospital_bed         6.7151e-01  1.5382e-01  4.3656 1.720e-05 ***
-## ozone               -4.1958e-01  1.0239e+00 -0.4098   0.68226    
-## revenue              3.6544e-05  1.9394e-05  1.8843   0.06044 .  
-## employee_industrial  2.5226e-01  4.5233e-01  0.5577   0.57744    
-## rate_material_recov  2.1528e-01  1.4206e-01  1.5154   0.13067    
-## family_income       -6.6772e-02  1.5806e-01 -0.4225   0.67298    
+## waste_recycled_muni  6.0694e-05  1.4364e-05  4.2256 3.119e-05 ***
+## automobiles_density  2.9362e-02  5.5710e-03  5.2705 2.520e-07 ***
+## hospital_bed         6.7440e-01  1.5522e-01  4.3447 1.880e-05 ***
+## ozone               -4.0249e-01  1.0196e+00 -0.3947   0.69330    
+## revenue              3.6076e-05  1.9587e-05  1.8419   0.06643 .  
+## employee_industrial  2.5477e-01  4.5901e-01  0.5550   0.57925    
+## rate_material_recov  2.2620e-01  1.4226e-01  1.5901   0.11281    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 </div>
@@ -3081,14 +3076,13 @@ matrix (Sandwich estimator) to account for it</p>
 ## t test of coefficients:
 ## 
 ##                        Estimate  Std. Error t value  Pr(&gt;|t|)    
-## waste_recycled_muni  6.0290e-05  1.4665e-05  4.1112 5.024e-05 ***
-## automobiles_density  2.9286e-02  5.6032e-03  5.2266 3.143e-07 ***
-## hospital_bed         6.7151e-01  1.5382e-01  4.3656 1.720e-05 ***
-## ozone               -4.1958e-01  1.0239e+00 -0.4098   0.68226    
-## revenue              3.6544e-05  1.9394e-05  1.8843   0.06044 .  
-## employee_industrial  2.5226e-01  4.5233e-01  0.5577   0.57744    
-## rate_material_recov  2.1528e-01  1.4206e-01  1.5154   0.13067    
-## family_income       -6.6772e-02  1.5806e-01 -0.4225   0.67298    
+## waste_recycled_muni  6.0694e-05  1.4364e-05  4.2256 3.119e-05 ***
+## automobiles_density  2.9362e-02  5.5710e-03  5.2705 2.520e-07 ***
+## hospital_bed         6.7440e-01  1.5522e-01  4.3447 1.880e-05 ***
+## ozone               -4.0249e-01  1.0196e+00 -0.3947   0.69330    
+## revenue              3.6076e-05  1.9587e-05  1.8419   0.06643 .  
+## employee_industrial  2.5477e-01  4.5901e-01  0.5550   0.57925    
+## rate_material_recov  2.2620e-01  1.4226e-01  1.5901   0.11281    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 </div>
@@ -3099,14 +3093,13 @@ matrix (Sandwich estimator) to account for it</p>
 ## t test of coefficients:
 ## 
 ##                        Estimate  Std. Error t value  Pr(&gt;|t|)    
-## waste_recycled_muni  6.0290e-05  1.5640e-05  3.8547 0.0001403 ***
-## automobiles_density  2.9286e-02  5.8198e-03  5.0321 8.156e-07 ***
-## hospital_bed         6.7151e-01  1.6355e-01  4.1059 5.134e-05 ***
-## ozone               -4.1958e-01  1.0860e+00 -0.3863 0.6995025    
-## revenue              3.6544e-05  1.9907e-05  1.8358 0.0673306 .  
-## employee_industrial  2.5226e-01  4.6782e-01  0.5392 0.5901091    
-## rate_material_recov  2.1528e-01  1.5271e-01  1.4097 0.1596044    
-## family_income       -6.6772e-02  1.6413e-01 -0.4068 0.6844105    
+## waste_recycled_muni  6.0694e-05  1.5264e-05  3.9762 8.678e-05 ***
+## automobiles_density  2.9362e-02  5.7793e-03  5.0805 6.440e-07 ***
+## hospital_bed         6.7440e-01  1.6457e-01  4.0979 5.301e-05 ***
+## ozone               -4.0249e-01  1.0802e+00 -0.3726   0.70968    
+## revenue              3.6076e-05  2.0079e-05  1.7967   0.07333 .  
+## employee_industrial  2.5477e-01  4.7268e-01  0.5390   0.59027    
+## rate_material_recov  2.2620e-01  1.5226e-01  1.4856   0.13837    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 </div>
@@ -3114,17 +3107,17 @@ matrix (Sandwich estimator) to account for it</p>
 <h3>The following shows the HC standard errors of the coefficients</h3>
 <pre class="r"><code>t(sapply(c(&quot;HC0&quot;, &quot;HC1&quot;, &quot;HC2&quot;, &quot;HC3&quot;, &quot;HC4&quot;), function(x) sqrt(diag(vcovHC(fixed, type = x)))))</code></pre>
 <pre><code>##     waste_recycled_muni automobiles_density hospital_bed    ozone      revenue
-## HC0        1.466500e-05         0.005603193    0.1538190 1.023947 1.939374e-05
-## HC1        1.483959e-05         0.005669900    0.1556503 1.036137 1.962462e-05
-## HC2        1.514112e-05         0.005708387    0.1585335 1.053996 1.964667e-05
-## HC3        1.564046e-05         0.005819780    0.1635490 1.086022 1.990657e-05
-## HC4        1.629445e-05         0.005889408    0.1709103 1.129276 1.983585e-05
-##     employee_industrial rate_material_recov family_income
-## HC0           0.4523269           0.1420635     0.1580571
-## HC1           0.4577119           0.1437548     0.1599388
-## HC2           0.4599468           0.1472275     0.1610353
-## HC3           0.4678232           0.1527136     0.1641294
-## HC4           0.4701343           0.1618341     0.1656260</code></pre>
+## HC0        1.436351e-05         0.005570969    0.1552225 1.019631 1.958670e-05
+## HC1        1.451280e-05         0.005628872    0.1568359 1.030228 1.979028e-05
+## HC2        1.480335e-05         0.005672065    0.1597502 1.048931 1.982917e-05
+## HC3        1.526427e-05         0.005779323    0.1645718 1.080162 2.007871e-05
+## HC4        1.593746e-05         0.005861634    0.1722809 1.125615 2.005867e-05
+##     employee_industrial rate_material_recov
+## HC0           0.4590067           0.1422555
+## HC1           0.4637775           0.1437341
+## HC2           0.4657338           0.1471130
+## HC3           0.4726797           0.1522583
+## HC4           0.4753146           0.1607594</code></pre>
 </div>
 </div>
 </div>

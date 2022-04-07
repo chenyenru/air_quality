@@ -5,6 +5,7 @@ knit: (function(input_file, encoding) {
   rmarkdown::render(input_file,
  encoding=encoding,
  output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
+author: "Yen-Ru Chen"
 output:
   html_document:
     toc: true
@@ -12,33 +13,63 @@ output:
 ---
 Adapted from [Getting Started in Fixed/Random Effects Models using R](https://dss.princeton.edu/training/Panel101R.pdf) from [Oscar Torres-Reyna](https://dss.princeton.edu/training/).
 # Preparation
+## Libraries
+```{r}
+library(dplyr)
+library(openxlsx)
+library(readr)
+library(tidyr)
+```
+
 ## Get the dataset
 ```{r}
-df <- read.csv("~/Documents/GitHub/Data_Analysis/air_qu/sec_apprch/DATA/merge2.csv")
+df <- read.csv("sec_apprch/DATA/merge2.csv")
+pm <- read.csv("sec_apprch/DATA/more/pm_concentration.csv")
+so2 <- read.csv("sec_apprch/DATA/more/so2_concentration.csv")
+
 # View(df)
 df <- df[, -1]
+
+pm <- pm %>%
+  gather("county", "pm", -year)
+
+so2 <- so2 %>%
+  gather("county", "so2", -year)
+```
+
+
+```{r}
+temp <- merge(df, pm, by = c(1, 2), all = TRUE)
+temp2 <- merge(temp, so2, by = c(1, 2), all = TRUE)
+
+
 # View(df)
 library(imputeTS)
 # df <- imputeTS::na_ma(df, k = 4, weighting = "simple")
 # View(df)
-na_interpolation(df, option = "na_mean")
 # View(df)
 
 # determine if there's na
-sum(is.na(df))
+sum(is.na(pdf))
 
 
 # Importing the large dataset of all voila
 
-file <- df
+file <- temp2
 
 
 colnames(file)[12] <- "raw_death_rates"
+file <- subset(file, year >= 2000)
+file <- subset(file, year <= 2018)
+file <- na_interpolation(file, option = "linear")
+# na_mean(file)
 summary(file)
 # colnames(file)[8]
 
 # Change factory_density's data type from character to numeric
 file$factory_density <- as.numeric(as.character(file$factory_density))
+file$so2 <- as.numeric(as.character(file$so2))
+file$pm <- as.numeric(as.character(file$pm))
 ```
 
 ## Get the packages
@@ -67,18 +98,23 @@ pdf <- pdata.frame(file, c("county", "year"))
 # View(pdf)
 colnames(pdf)
 ```
+```{r}
+# View(pdf)
+```
+
+
 
 # Analysis
 ## The model of all
 
 This is the model that includes all variables:
 ```
-model<- (raw_death_rates ~ waste_recycled_muni + locomobiles_density + automobiles_density + factory_density + hospital_bed + ozone + revenue + employee_industrial + family_income + rate_material_recov)
+model<- (raw_death_rates ~ waste_recycled_muni + locomobiles_density + automobiles_density + factory_density + hospital_bed + ozone + revenue + employee_industrial + family_income + rate_material_recov + so2 + pm) 
 ```
 
 This is the one we'll be using
 ```{r}
-model <- (raw_death_rates ~ waste_recycled_muni + automobiles_density + hospital_bed + ozone + revenue + employee_industrial + rate_material_recov + family_income)
+model<- (raw_death_rates ~ waste_recycled_muni + locomobiles_density + automobiles_density + hospital_bed + ozone + revenue + family_income + rate_material_recov + so2 + pm) 
 # for_map <- subset(pdf, select = -c(county, year))
 # View(for_map)
 # heatmap(for_map)
@@ -111,7 +147,9 @@ phtest(fixed, random)
 ### Time-fixed effects
 model<- (raw_death_rates ~ waste_recycled_muni + bulk_waste_recycled + rate_material_recov + locomobiles_density + automobiles_density + factory_density + doctor + ozone + revenue)
 ```{r}
-fixed.time <- plm(raw_death_rates ~ ozone + factor(year) + hospital_bed + waste_recycled_muni + automobiles_density + revenue, data = pdf, model = "within")
+# fixed.time <- plm(raw_death_rates ~ ozone + factor(year) + hospital_bed + waste_recycled_muni + automobiles_density + revenue, data = pdf, model = "within")
+
+fixed.time <- plm(raw_death_rates ~ waste_recycled_muni + locomobiles_density + automobiles_density + hospital_bed + ozone + revenue + employee_industrial + family_income + rate_material_recov + so2 + pm + factor(year), data = pdf, model = "within")
 summary(fixed.time)
 ```
 
@@ -119,8 +157,8 @@ summary(fixed.time)
 ### Testing Time-fixed effects model. The null hypothesis is that no time-fixed effects are needed
 ```{r}
 # fixed.time <- plm(raw_death_rates ~ ozone + factor(year) + hospital_bed + waste_recycled_muni + automobiles_density + revenue, data = pdf, model = "within")
-# pFtest(fixed.time, fixed)
-# plmtest(fixed, c("time"), type = ("bp"))
+pFtest(fixed.time, fixed)
+plmtest(fixed, c("time"), type = ("bp"))
 ```
 
 ### If the p value < 0.05 then use time-fixed effects.
