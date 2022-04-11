@@ -114,7 +114,7 @@ model<- (raw_death_rates ~ waste_recycled_muni + locomobiles_density + automobil
 
 This is the one we'll be using
 ```{r}
-model<- (raw_death_rates ~ waste_recycled_muni + locomobiles_density + automobiles_density + hospital_bed + ozone + revenue + family_income + rate_material_recov + so2 + pm) 
+model<- (raw_death_rates ~  so2 + pm + ozone + rate_material_recov + automobiles_density) 
 # for_map <- subset(pdf, select = -c(county, year))
 # View(for_map)
 # heatmap(for_map)

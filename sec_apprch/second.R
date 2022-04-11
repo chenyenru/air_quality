@@ -41,6 +41,7 @@ revenue$revenue <- as.numeric(gsub(",", "", revenue$revenue))
 
 # lung <- read.delim("DATA/lung_cancer_all.txt", fileEncoding="UTF-8", sep=",")
 lung <- read.csv("DATA/lung_cancer_all.csv")
+View(lung)
 colnames(lung) <- c("year", "sex", "county", "cancer", " ", " ", " ", " ", "raw_cancer_rate")
 lung <- subset(lung, !(county %in% c("澎湖縣", "金門縣", "連江縣", "全國", "新北市")))
 lung <- subset(lung, sex %in% c("全"))
