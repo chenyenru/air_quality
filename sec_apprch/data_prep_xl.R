@@ -53,11 +53,8 @@ factory_density <- gather(` 工廠密度`, "county", "factory_density", -year)
 # temp <- merge(waste_recycled_muni, bulk_waste_recycled, by = c(1, 2))
 # temp <- merge(temp, rate_material_recov, by = c(1, 2))
 temp1 <- merge(waste_recycled_muni, locomobiles_density, by = c(1, 2))
-View(temp1)
 temp2 <- merge(temp1, automobiles_density, by = c(1, 2))
-View(temp2)
 temp3 <- merge(temp2, factory_density, by = c(1, 2))
-View(temp3)
 temp4 <- merge(temp3, urban_density, by = c(1, 2))
 temp5 <- merge(temp4, hospital_bed, by = c(1, 2))
 temp6 <- merge(temp5, rate_material_recov, by = c(1, 2))
@@ -68,7 +65,6 @@ temp9 <- subset(temp8, !(county %in% c("澎湖縣", "金門縣", "連江縣", "�
 
 import <- read.csv("DATA/merged.csv")
 import <- import[, -1]
-View(import)
 
 final <- merge(temp9, import, by = c(1, 2))
 

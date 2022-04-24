@@ -58,8 +58,7 @@ sum(is.na(pdf))
 file <- temp2
 
 
-colnames(file)[12] <- "raw_death_rates"
-file <- subset(file, year >= 2000)
+file <- subset(file, year >= 2006)
 file <- subset(file, year <= 2018)
 file <- na_interpolation(file, option = "linear")
 # na_mean(file)
@@ -85,6 +84,12 @@ library(showtext)
 
 showtext_auto(enable = TRUE)
 ```
+## Transform big numbers
+```{r}
+file$waste_recycled_muni = file$waste_recycled_muni / 100
+file$revenue = file$revenue / 10000
+```
+
 
 ## Get ready for plm
 ```{r}
@@ -114,7 +119,9 @@ model<- (raw_death_rates ~ waste_recycled_muni + locomobiles_density + automobil
 
 This is the one we'll be using
 ```{r}
-model<- (raw_death_rates ~  so2 + pm + ozone + rate_material_recov + automobiles_density) 
+model<- (liver ~ automobiles_density + hospital_bed + ozone + revenue + employee_industrial + co + no2 + so2 + pm) 
+
+# the one that works: model<- (raw_death_rates ~  so2 + pm + ozone + rate_material_recov + automobiles_density) 
 # for_map <- subset(pdf, select = -c(county, year))
 # View(for_map)
 # heatmap(for_map)
@@ -122,6 +129,7 @@ model<- (raw_death_rates ~  so2 + pm + ozone + rate_material_recov + automobiles
 
 ## The 2 "Effects" Model
 ### Random Effects Model
+
 ```{r}
 random <- plm(model, data = pdf, model = "random")
 summary(random)
@@ -149,16 +157,18 @@ model<- (raw_death_rates ~ waste_recycled_muni + bulk_waste_recycled + rate_mate
 ```{r}
 # fixed.time <- plm(raw_death_rates ~ ozone + factor(year) + hospital_bed + waste_recycled_muni + automobiles_density + revenue, data = pdf, model = "within")
 
-fixed.time <- plm(raw_death_rates ~ waste_recycled_muni + locomobiles_density + automobiles_density + hospital_bed + ozone + revenue + employee_industrial + family_income + rate_material_recov + so2 + pm, data = pdf, model = "within")
+fixed.time <- plm(raw_death_rates ~ waste_recycled_muni + automobiles_density + factory_density + hospital_bed + ozone + revenue + employee_industrial + family_income + so2 + pm + co + no2, data = pdf, model = "within")
 summary(fixed.time)
+
+pFtest(fixed.time, fixed)
+plmtest(fixed, c("time"), type = ("bp"))
 ```
 
 
 ### Testing Time-fixed effects model. The null hypothesis is that no time-fixed effects are needed
 ```{r}
-# fixed.time <- plm(raw_death_rates ~ waste_recycled_muni + locomobiles_density + automobiles_density + hospital_bed + ozone + revenue + employee_industrial + family_income + rate_material_recov + so2 + pm + data = pdf, model = "within")
-# pFtest(fixed.time, fixed)
-# plmtest(fixed, c("time"), type = ("bp"))
+fixed.time <- plm(raw_death_rates ~ waste_recycled_muni + locomobiles_density + automobiles_density + hospital_bed + ozone + revenue + employee_industrial + family_income + rate_material_recov + so2 + pm + data = pdf, model = "within")
+
 ```
 
 ### If the p value < 0.05 then use time-fixed effects.
