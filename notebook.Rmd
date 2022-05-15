@@ -56,11 +56,10 @@ sum(is.na(pdf))
 # Importing the large dataset of all voila
 
 file <- temp2
-
-
 file <- subset(file, year >= 2006)
 file <- subset(file, year <= 2018)
 file <- na_interpolation(file, option = "linear")
+write.csv(file, file = "sec_apprch/DATA/final_merge.csv")
 # na_mean(file)
 summary(file)
 # colnames(file)[8]
@@ -105,6 +104,12 @@ colnames(pdf)
 ```
 ```{r}
 # View(pdf)
+boxplot(pdf)
+boxplot(x = as.list(as.data.frame(pdf)))
+library(ggplot2)
+library(reshape2)
+m1 <- melt(as.data.frame(pdf))
+ggplot(m1,aes(x = variable,y = value)) + facet_wrap(~variable) + geom_boxplot()
 ```
 
 
@@ -114,12 +119,12 @@ colnames(pdf)
 
 This is the model that includes all variables:
 ```
-model<- (raw_death_rates ~ waste_recycled_muni + locomobiles_density + automobiles_density + factory_density + hospital_bed + ozone + revenue + employee_industrial + family_income + rate_material_recov + so2 + pm) 
+model<- (raw_death_rates ~ waste_recycled_muni + locomobiles_density + automobiles_density + factory_density + hospital_bed + ozone + revenue + employee_industrial + family_income + rate_material_recov + so2 + pm + smoke) 
 ```
 
 This is the one we'll be using
 ```{r}
-model<- (liver ~ automobiles_density + hospital_bed + ozone + revenue + employee_industrial + co + no2 + so2 + pm) 
+model<- (lung ~ automobiles_density + hospital_bed + ozone + revenue + employee_industrial + co + no2 + so2 + pm + smoke) 
 
 # the one that works: model<- (raw_death_rates ~  so2 + pm + ozone + rate_material_recov + automobiles_density) 
 # for_map <- subset(pdf, select = -c(county, year))
