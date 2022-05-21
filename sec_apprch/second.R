@@ -22,7 +22,7 @@ smoke <- read.csv("~/Documents/GitHub/Data_Analysis/air_qu/sec_apprch/DATA/smoke
 colnames(ozone)[1] <- "year"
 ozone <- subset(ozone, year >= 1998)
 ozone <- subset(ozone, year <= 2018)
-View(ozone)
+# View(ozone)
 # ozone <- filter(ozone, county == "臺中市")
 # ozone <- ozone[, c("year", "臺中市")]
 # colnames(ozone)[2] <- "ozone"
@@ -48,6 +48,7 @@ no2 <- no2 %>%
 smoke_new <- subset(smoke, select = c(1, 2, 4))
 
 colnames(smoke_new) <- c("year", "county", "smoke")
+smoke_new <- subset(smoke_new, !(county %in% c("整體")))
 
 
 # revenue <- filter(revenue, county == "臺中市")
@@ -56,7 +57,7 @@ colnames(smoke_new) <- c("year", "county", "smoke")
 
 # lung <- read.delim("DATA/lung_cancer_all.txt", fileEncoding="UTF-8", sep=",")
 lung <- read.csv("DATA/lung_cancer_all.csv")
-colnames(lung) <- c("year", "sex", "county", "cancer", " ", " ", " ", " ", "raw_cancer_rate")
+colnames(lung) <- c("year", "sex", "county", "cancer", "raw_cancer_rate", " ", " ", " ", " ")
 lung <- subset(lung, !(county %in% c("澎湖縣", "金門縣", "連江縣", "全國", "新北市")))
 lung <- subset(lung, sex %in% c("全"))
 lung <- subset(lung, year >= 1998)
@@ -112,7 +113,7 @@ merge_two <- subset(merge_two, !(county %in% c("新北市")))
 merge_three <- merge(lung, merge_two, by = c(1, 2), all = TRUE)
 merge_four <- merge(co, merge_three, by = c(1, 2))
 merge_five <- merge(no2, merge_four, by = c(1, 2))
-merge_six <- merge(smoke_new, merge_five, by = c(1, 2))
+merge_six <- merge(merge_five, smoke_new, by = c(1, 2))
 merge_seven <- merge(ovarian, merge_six, by = c(1, 2))
 merge_eight <- merge(liver, merge_seven, by = c(1, 2))
 merge_nine <- merge(breast, merge_eight, by = c(1, 2))
