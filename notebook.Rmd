@@ -138,7 +138,7 @@ model<- (raw_death_rates ~ waste_recycled_muni + locomobiles_density + automobil
 
 This is the one we'll be using
 ```{r}
-model<- (lung ~ hospital_bed + ozone + revenue + so2 + pm + no2 + automobiles_density + revenue + family_income + rate_material_recov + employee_industrial)
+# model<- (lung ~ hospital_bed + ozone + revenue + so2 + pm + no2 + automobiles_density + revenue + family_income + rate_material_recov + employee_industrial)
 
 model <- (liver ~ pm + hospital_bed + rate_material_recov + employee_industrial + family_income + ozone + revenue + so2 + urban_density + locomobiles_density + smoke + factory_density + no2)
 # the one that works: model<- (raw_death_rates ~  so2 + pm + ozone + rate_material_recov + automobiles_density) 
@@ -171,18 +171,32 @@ H1) = Fixed Effects Model is efficient
 phtest(fixed, random)
 ```
 
+### Sensitivity Analysis
+```{r}
+library(sensemakr)
+model <- lm(liver ~ pm + hospital_bed + rate_material_recov + employee_industrial + family_income + ozone + revenue + so2 + urban_density + locomobiles_density + smoke + factory_density + no2, data=pdf)
+
+sensitivity <- sensemakr(model, treatment = 'no2', benchmark_covariates = "liver", kd = 1:3)
+ovb_minimal_reporting(sensitivity, format = "latex")
+summary(sensitivity)
+plot(sensitivity)
+```
+
+
+
 ## Regression Diagnostics
 ### Time-fixed effects
 model<- (raw_death_rates ~ waste_recycled_muni + bulk_waste_recycled + rate_material_recov + locomobiles_density + automobiles_density + factory_density + doctor + ozone + revenue)
 ```{r}
 # fixed.time <- plm(raw_death_rates ~ ozone + factor(year) + hospital_bed + waste_recycled_muni + automobiles_density + revenue, data = pdf, model = "within")
 
-fixed.time <- plm(breast ~ waste_recycled_muni + automobiles_density + factory_density + hospital_bed + ozone + revenue + employee_industrial + family_income + so2 + pm + co + no2, data = pdf, model = "within")
+fixed.time <- plm(liver ~ pm + hospital_bed + rate_material_recov + employee_industrial + family_income + ozone + revenue + so2 + urban_density + locomobiles_density + smoke + factory_density + no2, data = pdf, model = "within")
 summary(fixed.time)
 
 pFtest(fixed.time, fixed)
 plmtest(fixed, c("time"), type = ("bp"))
 ```
+
 
 
 ### Testing Time-fixed effects model. The null hypothesis is that no time-fixed effects are needed
@@ -196,7 +210,7 @@ fixed.time <- plm(breast ~ waste_recycled_muni + locomobiles_density + automobil
 
 ## Random effects vs Pooled OLS
 ```{r}
-pool <- plm(breast ~ ozone, data = pdf, model = "pooling")
+pool <- plm(liver ~ pm + hospital_bed + rate_material_recov + employee_industrial + family_income + ozone + revenue + so2 + urban_density + locomobiles_density + smoke + factory_density + no2, data = pdf, model = "pooling")
 summary(pool)
 ```
 
@@ -209,7 +223,7 @@ plmtest(pool, type = c("bp"))
 
 ## Cross-sectional dependence testing
 ```{r}
-fixed <- plm(model, data = pdf, model = "within")
+fixed <- plm((liver ~ pm + hospital_bed + rate_material_recov + employee_industrial + family_income + ozone + revenue + so2 + urban_density + locomobiles_density + smoke + factory_density + no2), data = pdf, model = "within")
 pcdtest(fixed, c("lm"))
 pcdtest(fixed, c("cd"))
 ```
