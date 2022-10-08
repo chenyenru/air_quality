@@ -1,0 +1,229 @@
+---
+title: "Panel Analysis"
+author: "Yen-Ru Chen"
+knit: (function(input_file, encoding) {
+  out_dir <- 'docs';
+  rmarkdown::render(input_file,
+ encoding=encoding,
+ output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
+output: 
+  html_notebook:
+    toc: true
+---
+
+# Preparation
+## Get the dataset
+
+df <- read.csv("DATA/merge2.csv")
+# View(df)
+df <- df[, -1]
+df
+View(df)
+library(imputeTS)
+# df <- imputeTS::na_ma(df, k = 4, weighting = "simple")
+# View(df)
+na_interpolation(df, option = "linear")
+View(df)
+
+# determine if there's na
+sum(is.na(df))
+
+
+# Importing the large dataset of all voila
+
+file <- df
+
+summary(file)
+colnames(file)[8] <- "raw_death_rates"
+colnames(file)[8]
+
+# Change factory_density's data type from character to numeric
+file$factory_density <- as.numeric(as.character(file$factory_density))
+
+
+
+
+```{r}
+df <- read.csv("DATA/final_merge.csv")
+df$X = NULL
+library(imputeTS)
+df$pm <- as.numeric(as.character(df$pm))
+df$factory_density <- as.numeric(as.character(df$factory_density))
+na_interpolation(df, option = "linear")
+sum(is.na(df))
+
+colSums(is.na(df))
+
+which(colSums(is.na(my_df))>0)
+
+View(df)
+```
+
+
+## Get the packages
+```{r}
+library(tidyverse) # Modern data science library
+library(plm) # Panel data analysis library
+library(car) # Companion to applied regression
+library(gplots) # Various programing tools for plotting data
+library(tseries) # For timeseries analysis
+library(lmtest) # For hetoroskedasticity analysis
+library(dplyr)
+library(showtext)
+
+showtext_auto(enable = TRUE)
+```
+
+## Get ready for plm
+```{r}
+# Check columns' data type
+df %>% summarise_all(funs(class))
+View(df)
+
+# An object of class 'pdata.frame' is a data.frame with an index attribute that describes its individual and time dimensions.
+df <- pdata.frame(df, c("county", "year"))
+
+# View pdf
+View(df)
+```
+
+# Analysis
+## The model of all
+
+This is the model that includes all variables:
+```
+model<- (liver ~ waste_recycled_muni + bulk_waste_recycled + rate_material_recov + locomobiles_density + automobiles_density + factory_density + doctor + ozone + revenue + sex + deaths + mean_age)
+```
+
+This is the one we'll be using
+```{r}
+model <- (liver ~ pm + hospital_bed + rate_material_recov + employee_industrial + family_income + revenue + ozone + so2 + no2)
+```
+
+## The 2 "Effects" Model
+### Random Effects Model
+```{r}
+random <- plm(model, data = df, model = "random")
+summary(random)
+```
+
+### Fixed Effects Model
+```{r}
+fixed <- plm(model, data = df, model = "within")
+summary(fixed)
+```
+
+```{r}
+plot(fixed$coefficients["NO2"], Panel$y, pch=19, xlab="x1", ylab="y")
+```
+
+
+### Compare the 2 Effects Model
+H0) = Random Effects Model is efficient
+H1) = Fixed Effects Model is efficient
+  if a > 0.05:
+    We should use the random effects model
+    
+```{r}
+phtest(fixed, random)
+```
+
+## Regression Diagnostics
+### Time-fixed effects
+```{r}
+fixed.time <- plm(raw_death_rates ~ ozone + factor(year) + waste_recycled_muni + locomobiles_density + automobiles_density + factory_density + urban_density + revenue, data = pdf, model = "within")
+summary(fixed.time)
+```
+
+### Testing Time-fixed effects model. The null hypothesis is that no time-fixed effects are needed
+```{r}
+pFtest(fixed.time, fixed)
+plmtest(fixed, c("time"), type = ("bp"))
+```
+
+### If the p value < 0.05 then use time-fixed effects.
+### In this example, no need to use time-fixed effects.
+
+## Random effects vs Pooled OLS
+```{r}
+pool <- plm(raw_death_rates ~ ozone, data = pdf, model = "pooling")
+summary(pool)
+```
+
+
+## Breusch-Pagan Lagrange Multiplier for random effects. Null is no panel effect (i.e. OLS better).
+```{r}
+plmtest(pool, type = c("bp"))
+```
+
+
+## Cross-sectional dependence testing
+```{r}
+fixed <- plm(raw_death_rates ~ ozone, data = pdf, model = "within")
+pcdtest(fixed, c("lm"))
+pcdtest(fixed, c("cd"))
+```
+
+## Serial Correlation Testing
+```{r}
+pbgtest(fixed)
+```
+
+
+## Unit Roots / Stationary Testing
+### H0) The null hypothesis is that the series has a unit root (i.e. non-stationary)
+```{r}
+adf.test(pdf$raw_death_rates, k = 2)
+```
+
+
+## Heteroskedasticity testing
+If hetersokedasticity is detected we need to use a robust covariance matrix (Sandwich estimator) to account for it
+```{r}
+bptest(raw_death_rates ~ ozone + factor(county), data = pdf, studentize = F)
+```
+
+## Controlling for heteroskedasticity: Random effects
+### Original Coefficients
+```{r}
+coeftest(random)
+```
+
+### Heteroskedasticity consistent coefficients
+```{r}
+coeftest(random, vcovHC)
+```
+
+### Heteroskedasticity consistent coefficients, type 3
+```{r}
+coeftest(random, vcovHC(random, type = "HC3"))
+```
+
+### The following shows the HC standard errors of the coefficients
+```{r}
+t(sapply(c("HC0", "HC1", "HC2", "HC3", "HC4"), function(x) sqrt(diag(vcovHC(random, type = x)))))
+```
+
+
+## Controlling for heteroskedasticity: Fixed effects
+### Original coefficients
+```{r}
+coeftest(fixed)
+```
+### Heteroskedasticity consistent coefficients
+```{r}
+coeftest(fixed, vcovHC)
+```
+### Heteroskedasticity consistent coefficients (Arellano)
+```{r}
+coeftest(fixed, vcovHC(fixed, method = "arellano"))
+```
+### Heteroskedasticity consistent coefficients, type 3
+```{r}
+coeftest(fixed, vcovHC(fixed, type = "HC3"))
+```
+### The following shows the HC standard errors of the coefficients
+```{r}
+t(sapply(c("HC0", "HC1", "HC2", "HC3", "HC4"), function(x) sqrt(diag(vcovHC(fixed, type = x)))))
+```
+

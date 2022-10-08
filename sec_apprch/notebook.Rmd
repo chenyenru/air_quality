@@ -1,44 +1,76 @@
 ---
 title: "Panel Analysis"
-author: "Yen-Ru Chen"
 knit: (function(input_file, encoding) {
   out_dir <- 'docs';
   rmarkdown::render(input_file,
  encoding=encoding,
  output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
-output: 
-  html_notebook:
+author: "Yen-Ru Chen"
+output:
+  html_document:
     toc: true
+    toc_float: true
 ---
-
+Adapted from [Getting Started in Fixed/Random Effects Models using R](https://dss.princeton.edu/training/Panel101R.pdf) from [Oscar Torres-Reyna](https://dss.princeton.edu/training/).
 # Preparation
+## Libraries
+```{r}
+library(dplyr)
+library(openxlsx)
+library(readr)
+library(tidyr)
+```
+
 ## Get the dataset
 ```{r}
 df <- read.csv("DATA/merge2.csv")
-View(df)
+pm <- read.csv("DATA/more/pm_concentration.csv")
+so2 <- read.csv("DATA/more/so2_concentration.csv")
+
+# View(df)
 df <- df[, -1]
-df
-View(df)
+df <- subset(df, year > 2006)
+
+
+pm <- pm %>%
+  gather("county", "pm", -year)
+
+so2 <- so2 %>%
+  gather("county", "so2", -year)
+```
+
+
+```{r}
+temp <- merge(pm, df, by = c(1, 2), all = TRUE)
+temp2 <- merge(temp, so2, by = c(1, 2), all = TRUE)
+
+
+# View(df)
 library(imputeTS)
 # df <- imputeTS::na_ma(df, k = 4, weighting = "simple")
 # View(df)
-na_interpolation(df, option = "linear")
-View(df)
+# View(df)
 
 # determine if there's na
-sum(is.na(df))
+sum(is.na(pdf))
 
 
 # Importing the large dataset of all voila
 
-file <- df
-
+file <- temp2
+file <- subset(file, year >= 2006)
+file <- subset(file, year <= 2018)
+file <- na_interpolation(file, option = "linear")
+# write.csv(file, file = "sec_apprch/DATA/final_merge.csv")
+# na_mean(file)
 summary(file)
-colnames(file)[8] <- "raw_death_rates"
-colnames(file)[8]
+# colnames(file)[8]
 
 # Change factory_density's data type from character to numeric
 file$factory_density <- as.numeric(as.character(file$factory_density))
+file$so2 <- as.numeric(as.character(file$so2))
+file$pm <- as.numeric(as.character(file$pm))
+write.csv(file, "20221008FINAL.csv")
 ```
 
 ## Get the packages
@@ -54,6 +86,12 @@ library(showtext)
 
 showtext_auto(enable = TRUE)
 ```
+## Transform big numbers
+```{r}
+file$waste_recycled_muni = file$waste_recycled_muni / 100
+file$revenue = file$revenue / 10000
+```
+
 
 ## Get ready for plm
 ```{r}
@@ -64,27 +102,79 @@ file %>% summarise_all(funs(class))
 pdf <- pdata.frame(file, c("county", "year"))
 
 # View pdf
-View(pdf)
+# View(pdf)
+colnames(pdf)
 ```
+```{r}
+# View(pdf)
+boxplot(pdf)
+boxplot(x = as.list(as.data.frame(pdf)))
+library(ggplot2)
+library(reshape2)
+m1 <- melt(as.data.frame(pdf))
+ggplot(m1,aes(x = variable,y = value)) + facet_wrap(~variable) + geom_boxplot()
+```
+
+
 
 # Analysis
 ## The model of all
 
 This is the model that includes all variables:
 ```
-model<- (raw_death_rates ~ waste_recycled_muni + bulk_waste_recycled + rate_material_recov + locomobiles_density + automobiles_density + factory_density + doctor + ozone + revenue + sex + deaths + mean_age)
+model<- (raw_death_rates ~ waste_recycled_muni + locomobiles_density + automobiles_density + factory_density + hospital_bed + ozone + revenue + employee_industrial + family_income + rate_material_recov + so2 + pm + smoke) 
 ```
+ [3] "pm"                  "waste_recycled_muni"
+ [5] "locomobiles_density" "automobiles_density"
+ [7] "factory_density"     "urban_density"      
+ [9] "hospital_bed"        "rate_material_recov"
+[11] "employee_industrial" "family_income"      
+[13] "oral"                "breast"             
+[15] "liver"               "ovarian"            
+[17] "no2"                 "co"                 
+[19] "lung"                "ozone"              
+[21] "revenue"             "smoke"              
+[23] "so2"                
+
 
 This is the one we'll be using
 ```{r}
-model <- (raw_death_rates ~ waste_recycled_muni + locomobiles_density + automobiles_density + factory_density + urban_density + ozone + revenue)
+# model<- (lung ~ hospital_bed + ozone + revenue + so2 + pm + no2 + automobiles_density + revenue + family_income + rate_material_recov + employee_industrial)
+
+model <- (liver ~ pm + hospital_bed + rate_material_recov + employee_industrial + family_income + ozone + revenue + so2 + urban_density + locomobiles_density + smoke + factory_density + no2)
+# the one that works: model<- (raw_death_rates ~  so2 + pm + ozone + rate_material_recov + automobiles_density) 
+# for_map <- subset(pdf, select = -c(county, year))
+# View(for_map)
+# heatmap(for_map)
 ```
 
 ## The 2 "Effects" Model
 ### Random Effects Model
+
 ```{r}
-random <- plm(model, data = pdf, model = "random")
+random<- plm(model, data = pdf, model = "random")
 summary(random)
+```
+```{r}
+file$no2
+```
+```{r}
+X = file$no2
+Y = file$liver
+A = summary(random)$coefficients["no2","Estimate"]
+B = summary(random)$coefficients["(Intercept)","Estimate"]
+dataAbline <- data.frame(a = A, b = B, group = c("GR1", "GR2"))
+
+class(B)
+ggplot(df,aes(no2,liver))+geom_point()+geom_abline(data = df, mapping = aes(intercept = A, slope = B)) 
+
+ggplot(df, aes(x = no2, y = liver, color = as.factor(county))) +
+geom_point() + xlim(0, 100) + 
+geom_abline(intercept = B, slope = A) +
+scale_color_hue(breaks = c("6", "8"))
+# plot(file$no2, file$liver, pch=19, xlab="x1", ylab="y")
+# abline(a = A, b = B, )
+
 ```
 
 ### Fixed Effects Model
@@ -103,17 +193,38 @@ H1) = Fixed Effects Model is efficient
 phtest(fixed, random)
 ```
 
+### Sensitivity Analysis
+```{r}
+library(sensemakr)
+model <- lm(liver ~ pm + hospital_bed + rate_material_recov + employee_industrial + family_income + ozone + revenue + so2 + urban_density + locomobiles_density + smoke + factory_density + no2, data=pdf)
+
+sensitivity <- sensemakr(model, treatment = 'no2', benchmark_covariates = "liver", kd = 1:3)
+ovb_minimal_reporting(sensitivity, format = "latex")
+summary(sensitivity)
+plot(sensitivity)
+```
+
+
+
 ## Regression Diagnostics
 ### Time-fixed effects
+model<- (raw_death_rates ~ waste_recycled_muni + bulk_waste_recycled + rate_material_recov + locomobiles_density + automobiles_density + factory_density + doctor + ozone + revenue)
 ```{r}
-fixed.time <- plm(raw_death_rates ~ ozone + factor(year) + waste_recycled_muni + locomobiles_density + automobiles_density + factory_density + urban_density + revenue, data = pdf, model = "within")
+# fixed.time <- plm(raw_death_rates ~ ozone + factor(year) + hospital_bed + waste_recycled_muni + automobiles_density + revenue, data = pdf, model = "within")
+
+fixed.time <- plm(liver ~ pm + hospital_bed + rate_material_recov + employee_industrial + family_income + ozone + revenue + so2 + urban_density + locomobiles_density + smoke + factory_density + no2, data = pdf, model = "within")
 summary(fixed.time)
+
+pFtest(fixed.time, fixed)
+plmtest(fixed, c("time"), type = ("bp"))
 ```
+
+
 
 ### Testing Time-fixed effects model. The null hypothesis is that no time-fixed effects are needed
 ```{r}
-pFtest(fixed.time, fixed)
-plmtest(fixed, c("time"), type = ("bp"))
+fixed.time <- plm(breast ~ waste_recycled_muni + locomobiles_density + automobiles_density + hospital_bed + ozone + revenue + employee_industrial + family_income + rate_material_recov + so2 + pm, data = pdf, model = "within")
+
 ```
 
 ### If the p value < 0.05 then use time-fixed effects.
@@ -121,7 +232,7 @@ plmtest(fixed, c("time"), type = ("bp"))
 
 ## Random effects vs Pooled OLS
 ```{r}
-pool <- plm(raw_death_rates ~ ozone, data = pdf, model = "pooling")
+pool <- plm(liver ~ pm + hospital_bed + rate_material_recov + employee_industrial + family_income + ozone + revenue + so2 + urban_density + locomobiles_density + smoke + factory_density + no2, data = pdf, model = "pooling")
 summary(pool)
 ```
 
@@ -134,7 +245,7 @@ plmtest(pool, type = c("bp"))
 
 ## Cross-sectional dependence testing
 ```{r}
-fixed <- plm(raw_death_rates ~ ozone, data = pdf, model = "within")
+fixed <- plm((liver ~ pm + hospital_bed + rate_material_recov + employee_industrial + family_income + ozone + revenue + so2 + urban_density + locomobiles_density + smoke + factory_density + no2), data = pdf, model = "within")
 pcdtest(fixed, c("lm"))
 pcdtest(fixed, c("cd"))
 ```
