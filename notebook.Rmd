@@ -176,8 +176,13 @@ phtest(fixed, random)
 library(sensemakr)
 model <- lm(liver ~ pm + hospital_bed + rate_material_recov + employee_industrial + family_income + ozone + revenue + so2 + urban_density + locomobiles_density + smoke + factory_density + no2, data=pdf)
 
-sensitivity <- sensemakr(model, treatment = 'no2', benchmark_covariates = "liver", kd = 1:3)
-ovb_minimal_reporting(sensitivity, format = "latex")
+sensitivity <- sensemakr(model, treatment = 'no2', benchmark_covariates = "family_income", kd = 1:3)
+
+ovb_minimal_reporting(sensitivity, format = "pure_html")
+
+```
+
+```{r}
 summary(sensitivity)
 plot(sensitivity)
 ```
